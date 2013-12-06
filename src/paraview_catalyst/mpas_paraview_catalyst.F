@@ -5,7 +5,7 @@
 ! Additional copyright and license information can be found in the LICENSE file
 ! distributed with this code, or at http://mpas-dev.github.com/license.html
 !
-module mpas_io_insitu
+module mpas_paraview_catalyst
 
    use mpas_grid_types
    use mpas_dmpar
@@ -138,25 +138,25 @@ module mpas_io_insitu
                        block_ptr % state % time_levs(1) % state % tracers % array)
 
       call coprocessor_register_data( \
-                       block_ptr % state % time_levs(1) % state % density % fieldName, \
-                       block_ptr % state % time_levs(1) % state % density % dimSizes(1), \
-                       block_ptr % state % time_levs(1) % state % density % dimSizes(2), \
-                       block_ptr % state % time_levs(1) % state % density % array)
+                       block_ptr % diagnostics % density % fieldName, \
+                       block_ptr % diagnostics % density % dimSizes(1), \
+                       block_ptr % diagnostics % density % dimSizes(2), \
+                       block_ptr % diagnostics % density % array)
       call coprocessor_register_data( \
-                       block_ptr % state % time_levs(1) % state % pressure % fieldName, \
-                       block_ptr % state % time_levs(1) % state % pressure % dimSizes(1), \
-                       block_ptr % state % time_levs(1) % state % pressure % dimSizes(2), \
-                       block_ptr % state % time_levs(1) % state % pressure % array)
+                       block_ptr % diagnostics % pressure % fieldName, \
+                       block_ptr % diagnostics % pressure % dimSizes(1), \
+                       block_ptr % diagnostics % pressure % dimSizes(2), \
+                       block_ptr % diagnostics % pressure % array)
       call coprocessor_register_data( \
-                       block_ptr % state % time_levs(1) % state % circulation % fieldName, \
-                       block_ptr % state % time_levs(1) % state % circulation % dimSizes(1), \
-                       block_ptr % state % time_levs(1) % state % circulation % dimSizes(2), \
-                       block_ptr % state % time_levs(1) % state % circulation % array)
+                       block_ptr % diagnostics % circulation % fieldName, \
+                       block_ptr % diagnostics % circulation % dimSizes(1), \
+                       block_ptr % diagnostics % circulation % dimSizes(2), \
+                       block_ptr % diagnostics % circulation % array)
       call coprocessor_register_data( \
-                       block_ptr % state % time_levs(1) % state % relativeVorticity % fieldName, \
-                       block_ptr % state % time_levs(1) % state % relativeVorticity % dimSizes(1), \
-                       block_ptr % state % time_levs(1) % state % relativeVorticity % dimSizes(2), \
-                       block_ptr % state % time_levs(1) % state % relativeVorticity % array)
+                       block_ptr % diagnostics % relativeVorticity % fieldName, \
+                       block_ptr % diagnostics % relativeVorticity % dimSizes(1), \
+                       block_ptr % diagnostics % relativeVorticity % dimSizes(2), \
+                       block_ptr % diagnostics % relativeVorticity % array)
 
       call coprocessor_write_vtk(0)
 
@@ -199,28 +199,28 @@ module mpas_io_insitu
 
       call coprocessor_add_data( \
                        itime, \
-                       block_ptr % state % time_levs(1) % state % density % fieldName, \
-                       block_ptr % state % time_levs(1) % state % density % dimSizes(1), \
-                       block_ptr % state % time_levs(1) % state % density % dimSizes(2), \
-                       block_ptr % state % time_levs(1) % state % density % array)
+                       block_ptr % diagnostics % density % fieldName, \
+                       block_ptr % diagnostics % density % dimSizes(1), \
+                       block_ptr % diagnostics % density % dimSizes(2), \
+                       block_ptr % diagnostics % density % array)
       call coprocessor_add_data( \
                        itime, \
-                       block_ptr % state % time_levs(1) % state % pressure % fieldName, \
-                       block_ptr % state % time_levs(1) % state % pressure % dimSizes(1), \
-                       block_ptr % state % time_levs(1) % state % pressure % dimSizes(2), \
-                       block_ptr % state % time_levs(1) % state % pressure % array)
+                       block_ptr % diagnostics % pressure % fieldName, \
+                       block_ptr % diagnostics % pressure % dimSizes(1), \
+                       block_ptr % diagnostics % pressure % dimSizes(2), \
+                       block_ptr % diagnostics % pressure % array)
       call coprocessor_add_data( \
                        itime, \
-                       block_ptr % state % time_levs(1) % state % circulation % fieldName, \
-                       block_ptr % state % time_levs(1) % state % circulation % dimSizes(1), \
-                       block_ptr % state % time_levs(1) % state % circulation % dimSizes(2), \
-                       block_ptr % state % time_levs(1) % state % circulation % array)
+                       block_ptr % diagnostics % circulation % fieldName, \
+                       block_ptr % diagnostics % circulation % dimSizes(1), \
+                       block_ptr % diagnostics % circulation % dimSizes(2), \
+                       block_ptr % diagnostics % circulation % array)
       call coprocessor_add_data( \
                        itime, \
-                       block_ptr % state % time_levs(1) % state % relativeVorticity % fieldName, \
-                       block_ptr % state % time_levs(1) % state % relativeVorticity % dimSizes(1), \
-                       block_ptr % state % time_levs(1) % state % relativeVorticity % dimSizes(2), \
-                       block_ptr % state % time_levs(1) % state % relativeVorticity % array)
+                       block_ptr % diagnostics % relativeVorticity % fieldName, \
+                       block_ptr % diagnostics % relativeVorticity % dimSizes(1), \
+                       block_ptr % diagnostics % relativeVorticity % dimSizes(2), \
+                       block_ptr % diagnostics % relativeVorticity % array)
 
       call coprocessor_write_vtk(itime)
 
@@ -247,4 +247,4 @@ module mpas_io_insitu
  
    end subroutine mpas_insitu_finalize!}}}
  
-end module mpas_io_insitu
+end module mpas_paraview_catalyst

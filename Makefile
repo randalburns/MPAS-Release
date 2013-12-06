@@ -242,6 +242,10 @@ ifneq ($(wildcard $(NETCDF)/lib/libnetcdff.*), ) # CHECK FOR NETCDF4
 endif # CHECK FOR NETCDF4
 LIBS += $(NCLIB)
 
+ifeq "$(USE_PARAVIEW)" "true"
+	LIBS += -lparaview -L$(PARAVIEW)/lib -Lparaview_catalyst/Adaptor-build -lMPASAdaptor 
+endif
+
 RM = rm -f
 CPP = cpp -P -traditional
 RANLIB = ranlib
@@ -376,6 +380,7 @@ endif
                  FCINCLUDES="$(FCINCLUDES)" \
                  CORE="$(CORE)"\
                  AUTOCLEAN="$(AUTOCLEAN)" \
+                 USE_PARAVIEW="$(USE_PARAVIEW)" \
                  GEN_F90="$(GEN_F90)"
 	@echo "$(CORE)" > .mpas_core_$(CORE)
 	if [ -e src/$(CORE)_model ]; then mv src/$(CORE)_model .; fi
@@ -457,9 +462,10 @@ errmsg:
 	@echo "    TAU=true      - builds version using TAU hooks for profiling. Default is off."
 	@echo "    AUTOCLEAN=true    - forces a clean of infrastructure prior to build new core."
 	@echo "    GEN_F90=true  - Generates intermediate .f90 files through CPP, and builds with them."
+	@echo "    USE_PARAVIEW=true - builds using paraview catalyst, for insitu visualization and analysis."
 	@echo ""
-	@echo "Ensure that NETCDF, PNETCDF, PIO, and PAPI (if USE_PAPI=true) are environment variables"
-	@echo "that point to the absolute paths for the libraries."
+	@echo "Ensure that NETCDF, PNETCDF, PIO, PAPI (if USE_PAPI=true) and PARAVIEW (if USE_PARAVIEW=true)"
+	@echo "are environment variables that point to the absolute paths for the libraries."
 	@echo ""
 ifdef CORE
 	exit 1

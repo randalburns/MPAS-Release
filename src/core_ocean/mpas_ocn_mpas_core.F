@@ -93,6 +93,7 @@ module mpas_core
 
       use mpas_grid_types
       use ocn_tracer_advection
+      use mpas_paraview_catalyst
 
       implicit none
 
@@ -246,6 +247,11 @@ module mpas_core
       endif
 
       current_outfile_frames = 0
+
+      !
+      ! Initialize insitu coprocessing
+      !
+      call mpas_insitu_initialize
 
    end subroutine mpas_core_init!}}}
 
@@ -437,6 +443,7 @@ module mpas_core
       use mpas_kind_types
       use mpas_grid_types
       use mpas_io_output
+      use mpas_paraview_catalyst
       use mpas_timer
    
       implicit none
@@ -464,6 +471,8 @@ module mpas_core
          call ocn_write_output_frame(output_obj, output_frame, domain)
       endif
       block_ptr => domain % blocklist
+
+      call mpas_insitu_create_geometry(domain)
 
       do while(associated(block_ptr))
         call ocn_time_average_init(block_ptr % average)
@@ -500,6 +509,24 @@ module mpas_core
             block_ptr => block_ptr % next
          end do
       
+         !
+         ! Do coprocessing
+         !
+         block_ptr => domain % blocklist
+         do while (associated(block_ptr))
+             call ocn_time_average_normalize(block_ptr % average)
+             block_ptr => block_ptr % next
+         end do
+
+         call mpas_insitu_load_data(domain, itimestep)
+         call mpas_insitu_coprocess(itimestep)
+
+         block_ptr => domain % blocklist
+         do while (associated(block_ptr))
+             call ocn_time_average_init(block_ptr % average)
+             block_ptr => block_ptr % next
+         end do
+
          if (mpas_is_alarm_ringing(clock, outputAlarmID, ierr=ierr)) then
             call mpas_reset_clock_alarm(clock, outputAlarmID, ierr=ierr)
             ! output_frame will always be > 1 here unless it was reset after the 
@@ -1130,6 +1157,7 @@ end subroutine ocn_compute_max_level!}}}
    subroutine mpas_core_finalize(domain)!{{{
    
       use mpas_grid_types
+      use mpas_paraview_catalyst
    
       implicit none
 
@@ -1137,6 +1165,11 @@ end subroutine ocn_compute_max_level!}}}
       integer :: ierr
 
       call mpas_destroy_clock(clock, ierr)
+
+      !
+      ! Finalize insitu coprocessing
+      !
+      call mpas_insitu_finalize
 
    end subroutine mpas_core_finalize!}}}
 
