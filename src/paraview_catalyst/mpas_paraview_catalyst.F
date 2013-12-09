@@ -31,11 +31,12 @@ module mpas_paraview_catalyst
       type (domain_type), intent(inout) :: domain
       type (block_type), pointer :: block_ptr
       type (mpas_exchange_list), pointer :: exchListPtr
+      real (kind=RKIND), dimension(:,:,:), pointer :: tracers
 
       integer :: nCells, nEdges, nVertices, maxEdges, vertexDegree, nVertLevels
       integer :: nGhostCell, nGhostVertex
       integer :: nHaloLayers, iHalo, iCell, indx
-      integer :: indexT, indexS
+      integer :: indexT, indexS, numTracers
       integer, dimension(:), allocatable :: cellGhost, cellHalo
       integer, dimension(:), allocatable :: vertexGhost, vertexHalo
 
@@ -122,17 +123,21 @@ module mpas_paraview_catalyst
                        block_ptr % mesh % verticesOnCell % array, \
                        block_ptr % mesh % cellMask % array)
 
+      tracers => block_ptr % state % time_levs(2) % state % tracers % array
+      numTracers = size(tracers, dim=1)
       indexT = block_ptr % state % time_levs(1) % state % index_temperature
       indexS = block_ptr % state % time_levs(1) % state % index_salinity
       call coprocessor_register_tracer_data( \
                        indexT, \
                        block_ptr % state % time_levs(1) % state % tracers % constituentNames(indexT), \
+                       numTracers, \
                        block_ptr % state % time_levs(1) % state % tracers % dimSizes(2), \
                        block_ptr % state % time_levs(1) % state % tracers % dimSizes(3), \
                        block_ptr % state % time_levs(1) % state % tracers % array)
       call coprocessor_register_tracer_data( \
                        indexS, \
                        block_ptr % state % time_levs(1) % state % tracers % constituentNames(indexS), \
+                       numTracers, \
                        block_ptr % state % time_levs(1) % state % tracers % dimSizes(2), \
                        block_ptr % state % time_levs(1) % state % tracers % dimSizes(3), \
                        block_ptr % state % time_levs(1) % state % tracers % array)
@@ -172,13 +177,16 @@ module mpas_paraview_catalyst
       implicit none
  
       type (domain_type), intent(inout) :: domain
-      integer, intent(inout) :: itime
-      integer :: indexT, indexS
       type (block_type), pointer :: block_ptr
+      integer, intent(inout) :: itime
+      integer :: indexT, indexS, numTracers
+      real (kind=RKIND), dimension(:,:,:), pointer :: tracers
 
       print *,'COPROCESS mpas_load_data',itime
       block_ptr => domain % blocklist
 
+      tracers => block_ptr % state % time_levs(2) % state % tracers % array
+      numTracers = size(tracers, dim=1)
       indexT = block_ptr % state % time_levs(1) % state % index_temperature
       indexS = block_ptr % state % time_levs(1) % state % index_salinity
 
@@ -186,6 +194,7 @@ module mpas_paraview_catalyst
                        itime, \
                        indexT, \
                        block_ptr % state % time_levs(1) % state % tracers % constituentNames(indexT), \
+                       numTracers, \
                        block_ptr % state % time_levs(1) % state % tracers % dimSizes(2), \
                        block_ptr % state % time_levs(1) % state % tracers % dimSizes(3), \
                        block_ptr % state % time_levs(1) % state % tracers % array)
@@ -193,6 +202,7 @@ module mpas_paraview_catalyst
                        itime, \
                        indexS, \
                        block_ptr % state % time_levs(1) % state % tracers % constituentNames(indexS), \
+                       numTracers, \
                        block_ptr % state % time_levs(1) % state % tracers % dimSizes(2), \
                        block_ptr % state % time_levs(1) % state % tracers % dimSizes(3), \
                        block_ptr % state % time_levs(1) % state % tracers % array)

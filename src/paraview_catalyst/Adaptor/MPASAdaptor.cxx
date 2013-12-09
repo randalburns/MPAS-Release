@@ -312,6 +312,7 @@ extern "C" void coprocessor_register_data(
 extern "C" void coprocessor_register_tracer_data(
                                      int* tindex,
                                      char* fname,
+                                     int* dim0,
                                      int* dim1,
                                      int* dim2,
                                      double* data)
@@ -321,8 +322,12 @@ extern "C" void coprocessor_register_tracer_data(
                        GetInputDescriptionByName ("input")->GetGrid ());
 
   int varIndx = *tindex - 1;
+  int numTracers = *dim0;
   int numLevels = *dim1;
   int numCells = *dim2;
+
+  int perCell = numLevels * numTracers;
+  int perLevel = numTracers;
 
   int type;
   bool* useCell;
@@ -350,10 +355,10 @@ extern "C" void coprocessor_register_tracer_data(
     arr->SetNumberOfComponents(numLevels);
     arr->Allocate(numCells);
     float* value = new float[numLevels];
-    for (int j = 0; j < numCells; j++) {
-      if (useCell[j] == 1) {
+    for (int cell = 0; cell < numCells; cell++) {
+      if (useCell[cell] == 1) {
         for (int lev = 0; lev < numLevels; lev++) {
-          int findx = (j * numLevels * 2) + (lev * 2) + varIndx;
+          int findx = (cell * perCell) + (lev * perLevel) + varIndx;
           value[lev] = (float) data[findx];
         }
         arr->InsertNextTuple(value);
@@ -366,10 +371,10 @@ extern "C" void coprocessor_register_tracer_data(
   else {
     arr->SetNumberOfComponents(1);
     arr->Allocate(numCells * numLevels);
-    for (int j = 0; j < numCells; j++) {
+    for (int cell = 0; cell < numCells; cell++) {
       for (int lev = 0; lev < numLevels; lev++) {
-        if (useCell[j] == 1) {
-          int findx = (j * numLevels * 2) + (lev * 2) + varIndx;
+        if (useCell[cell] == 1) {
+          int findx = (cell * perCell) + (lev * perLevel) + varIndx;
           arr->InsertNextValue((float) data[findx]);
         }
       }
@@ -453,6 +458,7 @@ extern "C" void coprocessor_add_data(int* itime,
 extern "C" void coprocessor_add_tracer_data(int* itime,
                                             int* tindex,
                                             char* fname,
+                                            int* dim0,
                                             int* dim1,
                                             int* dim2,
                                             double* data)
@@ -462,8 +468,12 @@ extern "C" void coprocessor_add_tracer_data(int* itime,
                        GetInputDescriptionByName ("input")->GetGrid ());
 
   int varIndx = *tindex - 1;
+  int numTracers = *dim0;
   int numLevels = *dim1;
   int numCells = *dim2;
+
+  int perCell = numLevels * numTracers;
+  int perLevel = numTracers;
 
   int type;
   bool* useCell;
@@ -489,10 +499,10 @@ extern "C" void coprocessor_add_tracer_data(int* itime,
   // 2D cells have a component for every layer
   if (cellDim == 2) {
     int cindx = 0;
-    for (int j = 0; j < numCells; j++) {
-      if (useCell[j] == 1) {
+    for (int cell = 0; cell < numCells; cell++) {
+      if (useCell[cell] == 1) {
         for (int lev = 0; lev < numLevels; lev++) {
-          int findx = (j * numLevels * 2) + (lev * 2) + varIndx;
+          int findx = (cell * perCell) + (lev * perLevel) + varIndx;
           ptr[cindx++] = (float) data[findx];
         }
       }
@@ -502,10 +512,10 @@ extern "C" void coprocessor_add_tracer_data(int* itime,
   // 3D cells have a component for every cell
   else {
     int cindx = 0;
-    for (int j = 0; j < numCells; j++) {
+    for (int cell = 0; cell < numCells; cell++) {
       for (int lev = 0; lev < numLevels; lev++) {
-        if (useCell[j] == 1) {
-          int findx = (j * numLevels * 2) + (lev * 2) + varIndx;
+        if (useCell[cell] == 1) {
+          int findx = (cell * perCell) + (lev * perLevel) + varIndx;
           ptr[cindx++] = (float) data[findx];
         }
       }
