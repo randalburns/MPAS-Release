@@ -723,6 +723,8 @@ module mpas_core
          tracers => block % state % time_levs(1) % state % tracers % array
          refBottomDepth => block % mesh % refBottomDepth % array
          refBottomDepthTopOfCell => block % mesh % refBottomDepthTopOfCell % array
+         refZMid => block % mesh % refZMid % array
+         refLayerThickness => block % mesh % refLayerThickness % array
          bottomDepth => block % mesh % bottomDepth % array
          vertCoordMovementWeights => block % mesh % vertCoordMovementWeights % array
          maxLevelCell => block % mesh % maxLevelCell % array

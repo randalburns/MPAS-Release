@@ -95,10 +95,12 @@ module ocn_time_integration_split
       type (dm_info) :: dminfo
       integer :: iCell, i,k,j, iEdge, cell1, cell2, split_explicit_step, split, &
                  eoe, oldBtrSubcycleTime, newBtrSubcycleTime, uPerpTime, BtrCorIter, &
-                 n_bcl_iter(config_n_ts_iter), stage1_tend_time, startIndex, endIndex
+                 n_bcl_iter(config_n_ts_iter), stage1_tend_time, startIndex, endIndex, &
+                 indexT, indexS, index1
       type (block_type), pointer :: block
       real (kind=RKIND) :: normalThicknessFluxSum, thicknessSum, flux, sshEdge, hEdge1, &
-                 CoriolisTerm, uCorr, temp, temp_h, coef, barotropicThicknessFlux_coeff, sshCell1, sshCell2
+                 CoriolisTerm, uCorr, temp, temp_h, coef, barotropicThicknessFlux_coeff, sshCell1, sshCell2, &
+                 zInflowTop, uInflow
       integer :: num_tracers, ucorr_coef, err
       real (kind=RKIND), dimension(:,:), pointer :: &
                  u, h, layerThicknessEdge, vertViscTopOfEdge, vertDiffTopOfCell
@@ -807,6 +809,61 @@ module ocn_time_integration_split
 
                deallocate(uTemp)
 
+               !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+               !
+               !  Enforce velocity values at northern edge of embayment
+               !  mrp for DOME 3D overflow problem only
+               !
+               !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+               if (config_use_dome_inflow) then
+                 do iEdge=1,block % mesh % nEdges
+                   if (block % mesh % yEdge % array(iEdge) .gt. config_inflow_min_y ) then
+
+                     ! Compute the inflow as n dot u_inflow where n is normal to the edge.
+                     ! angleEdge varies from 0 (pointing east) to 2pi.
+                     uInflow =   cos(block % mesh % angleEdge % array(iEdge))*config_inflow_x_velocity &
+                               + sin(block % mesh % angleEdge % array(iEdge))*config_inflow_y_velocity 
+
+                     ! inflow top from eqn 3 of Legg 2006, h(x_w) = h_0 exp(-x_w/L_\rho)
+                     zInflowTop = - config_inflow_embayment_depth &
+                        !+ config_inflow_height*EXP(-(block % mesh % xEdge % array(iEdge) - config_inflow_x0)/config_inflow_Lrho) !CASE 0 and 1
+                        + config_inflow_height*(1.0-(block % mesh % xEdge % array(iEdge) - config_inflow_x0)/2.0e5) !CASE 2 and 3
+
+                     ! Set u to inflow value, but only below the specified depth.
+                     do k=1,block % mesh % maxLevelEdgeTop % array(iEdge)
+                        if ( -block % mesh % refBottomDepth % array(k) .gt. zInflowTop) then !CASE 1 and 3
+                        !if ( -(block % mesh % refBottomDepth % array(k) + block % mesh % refZMid % array(k)) .gt. zInflowTop) then !CASE 0 and 2
+                           block % diagnostics % uTransport % array(k,iEdge) = 0.0
+                        else
+                           block % diagnostics % uTransport % array(k,iEdge) = uInflow
+                        endif
+                     enddo
+
+                     ! Compute btr/bcl splitting
+                     normalThicknessFluxSum = block % diagnostics % layerThicknessEdge % array(1,iEdge) &
+                            *block % diagnostics % uTransport % array(1,iEdge)
+                     thicknessSum  = block % diagnostics % layerThicknessEdge % array(1,iEdge)
+
+                     do k=2,block % mesh % maxLevelEdgeTop % array(iEdge)
+                        normalThicknessFluxSum = normalThicknessFluxSum + block % diagnostics % layerThicknessEdge % array(k,iEdge) &
+                                       *block % diagnostics % uTransport % array(k,iEdge)
+                        thicknessSum  =  thicknessSum + block % diagnostics % layerThicknessEdge % array(k,iEdge)
+                     enddo
+
+                     block % state % time_levs(2) % state % normalBarotropicVelocity % array(iEdge) = normalThicknessFluxSum/thicknessSum
+
+                     do k=1,block % mesh % maxLevelEdgeTop % array(iEdge)
+                        block % state % time_levs(2) % state % normalBaroclinicVelocity % array(k,iEdge) &
+                        = block % diagnostics % uTransport % array(k,iEdge) &
+                        - block % state % time_levs(2) % state % normalBarotropicVelocity % array(iEdge) 
+                     enddo
+
+                   endif
+                 end do ! iEdge
+               endif
+               !  mrp for DOME 3D overflow problem only end
+
                block => block % next
             end do  ! block
 
@@ -1010,6 +1067,37 @@ module ocn_time_integration_split
                end do ! iEdges
 
             endif ! split_explicit_step
+
+            !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+            !
+            !  Enforce tracer values at northern edge of embayment
+            !  mrp for DOME 3D overflow problem only
+            !
+            !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+            if (config_use_dome_inflow) then
+              indexT = block % state % time_levs(2) % state % index_temperature
+              indexS = block % state % time_levs(2) % state % index_salinity
+              index1 = block % state % time_levs(2) % state % index_tracer1
+              do iCell=1,block % mesh % nCells
+                if (block % mesh % yCell % array(iCell) .gt. config_inflow_min_y ) then
+
+                  do k=1,block % mesh % maxLevelCell % array(iCell)
+
+                     ! this is h_{n+1}
+                     block % state % time_levs(2) % state % layerThickness % array(k,iCell) = block % mesh % refLayerThickness % array(k)
+
+                     ! This is Phi at n+1
+                     block % state % time_levs(2) % state % tracers % array(indexT,k,iCell) = config_inflow_temperature
+                     block % state % time_levs(2) % state % tracers % array(indexS,k,iCell) = config_inflow_salinity
+                     block % state % time_levs(2) % state % tracers % array(index1,k,iCell) = config_inflow_tracer1
+
+                  end do
+                endif
+              end do
+            endif
+            !  mrp for DOME 3D overflow problem only end
+
 
             block => block % next
          end do

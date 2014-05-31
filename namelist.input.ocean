@@ -186,6 +186,19 @@
 	config_test_tensors = .false.
 	config_tensor_test_function = "sph_uCosCos"
 /
+&dome_3D_overflow_test_case_inflow
+	config_use_dome_inflow = .false.
+	config_inflow_min_y = 790.0e3
+	config_inflow_x_velocity = 0.0
+	config_inflow_y_velocity = -2.4
+	config_inflow_temperature = 5.0
+	config_inflow_salinity = 35.0
+	config_inflow_tracer1 = 1.0
+	config_inflow_embayment_depth = 600.0
+	config_inflow_height = 300.0
+	config_inflow_Lrho = 2.4e4
+	config_inflow_x0 = 1600.0
+/
 &debug
 	config_check_zlevel_consistency = .false.
 	config_filter_btr_mode = .false.

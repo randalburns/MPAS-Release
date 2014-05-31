@@ -628,6 +628,52 @@
 		            possible_values="'linear_x', 'linear_y', 'linear_arb_rot', 'power_x', 'power_y', 'power_arb_rot', 'sin_arb_rot', 'sph_solid_body', 'sph_Williamson', 'sph_uCosCos', 'sph_vCosCos', 'sph_ELonLon_CosCos', 'sph_ELatLat_CosCos', 'sph_ELonLat_CosCos'"
 		/>
 	</nml_record>
+	<nml_record name="dome_3D_overflow_test_case_inflow">
+		<nml_option name="config_use_dome_inflow" type="logical" default_value=".false." units="unitless"
+		            description="If true, activate inflow boundary for the DOME 3D overflow test case."
+		            possible_values=".true. or .false."
+		/>
+		<nml_option name="config_inflow_min_y" type="real" default_value="790.0e3" units="m"
+		            description="y-location of overflow.  Boundary conditions are enforced at y-locations north of this value."
+		            possible_values="any positive real"
+		/>
+		<nml_option name="config_inflow_x_velocity" type="real" default_value="0.0" units="m s^{-1}"
+		            description="x-velocity imposed in DOME test case inflow region."
+		            possible_values="any positive real"
+		/>
+		<nml_option name="config_inflow_y_velocity" type="real" default_value="-2.4" units="m s^{-1}"
+		            description="y-velocity imposed in DOME test case inflow region."
+		            possible_values="any positive real"
+		/>
+		<nml_option name="config_inflow_temperature" type="real" default_value="5.0" units="C"
+		            description="Temperature imposed in DOME test case inflow region."
+		            possible_values="any positive real"
+		/>
+		<nml_option name="config_inflow_salinity" type="real" default_value="35.0" units="PSU"
+		            description="Salinity imposed in DOME test case inflow region."
+		            possible_values="any positive real"
+		/>
+		<nml_option name="config_inflow_tracer1" type="real" default_value="1.0" units="unitless"
+		            description="Tracer1 value imposed in DOME test case inflow region."
+		            possible_values="any positive real"
+		/>
+		<nml_option name="config_inflow_embayment_depth" type="real" default_value="600.0" units="m"
+		            description="Depth of embayment region for DOME test case."
+		            possible_values="any positive real"
+		/>
+		<nml_option name="config_inflow_height" type="real" default_value="300.0" units="m"
+		            description="Height of inflow in DOME test case inflow region.  This is h_0 in equation 3 of Legg et al. 2006."
+		            possible_values="any positive real"
+		/>
+		<nml_option name="config_inflow_Lrho" type="real" default_value="2.4e4" units=""
+		            description="This is L_\rho in equation 3 of Legg et al. 2006."
+		            possible_values="any positive real"
+		/>
+		<nml_option name="config_inflow_x0" type="real" default_value="1600.0" units="m"
+		            description="X-coordinate where embayment begins in DOME test case inflow region."
+		            possible_values="any positive real"
+		/>
+	</nml_record>
 	<nml_record name="debug">
 		<nml_option name="config_check_zlevel_consistency" type="logical" default_value=".false." units="unitless"
 					description="Enables a run-time check for consistency for a zlevel grid. Ensures relevant variables correctly define the bottom of the ocean."
@@ -942,6 +988,12 @@
 		/>
 		<var name="refBottomDepth" type="real" dimensions="nVertLevels" streams="iro" units="m"
 			 description="Reference depth of ocean for each vertical level. Used in 'z-level' type runs."
+		/>
+		<var name="refZMid" type="real" dimensions="nVertLevels" streams="o" units="m"
+		     description="Reference mid z-coordinate of ocean for each vertical level.  This has a negative value."
+		/>
+		<var name="refLayerThickness" type="real" dimensions="nVertLevels" streams="o" units="m"
+		     description="Reference layerThickness of ocean for each vertical level."
 		/>
 		<var name="refBottomDepthTopOfCell" type="real" dimensions="nVertLevelsP1" units="m"
 			 description="Reference depth of ocean for each vertical interface. Used in 'z-level' type runs."
