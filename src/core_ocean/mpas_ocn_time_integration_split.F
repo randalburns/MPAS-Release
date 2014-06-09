@@ -1085,7 +1085,7 @@ module ocn_time_integration_split
                   do k=1,block % mesh % maxLevelCell % array(iCell)
 
                      ! this is h_{n+1}
-                     block % state % time_levs(2) % state % layerThickness % array(k,iCell) = block % mesh % refLayerThickness % array(k)
+                     block % state % time_levs(2) % state % layerThickness % array(k,iCell) = block % verticalMesh % refLayerThickness % array(k)
 
                      ! This is Phi at n+1
                      block % state % time_levs(2) % state % tracers % array(indexT,k,iCell) = config_inflow_temperature

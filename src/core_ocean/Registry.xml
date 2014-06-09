@@ -989,12 +989,6 @@
 		<var name="refBottomDepth" type="real" dimensions="nVertLevels" streams="iro" units="m"
 			 description="Reference depth of ocean for each vertical level. Used in 'z-level' type runs."
 		/>
-		<var name="refZMid" type="real" dimensions="nVertLevels" streams="o" units="m"
-		     description="Reference mid z-coordinate of ocean for each vertical level.  This has a negative value."
-		/>
-		<var name="refLayerThickness" type="real" dimensions="nVertLevels" streams="o" units="m"
-		     description="Reference layerThickness of ocean for each vertical level."
-		/>
 		<var name="refBottomDepthTopOfCell" type="real" dimensions="nVertLevelsP1" units="m"
 			 description="Reference depth of ocean for each vertical interface. Used in 'z-level' type runs."
 		/>

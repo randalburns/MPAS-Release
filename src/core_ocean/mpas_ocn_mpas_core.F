@@ -723,8 +723,9 @@ module mpas_core
          tracers => block % state % time_levs(1) % state % tracers % array
          refBottomDepth => block % mesh % refBottomDepth % array
          refBottomDepthTopOfCell => block % mesh % refBottomDepthTopOfCell % array
-         refZMid => block % mesh % refZMid % array
-         refLayerThickness => block % mesh % refLayerThickness % array
+! mrp 140609.  These lines are a bug in version 2.0  refLayerThickness pointer is assigned below.
+!         refZMid => block % mesh % refZMid % array
+!         refLayerThickness => block % mesh % refLayerThickness % array
          bottomDepth => block % mesh % bottomDepth % array
          vertCoordMovementWeights => block % mesh % vertCoordMovementWeights % array
          maxLevelCell => block % mesh % maxLevelCell % array
