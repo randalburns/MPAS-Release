@@ -908,16 +908,16 @@
 		<var name="areaTriangle" type="real" dimensions="nVertices" streams="iro" units="m^2"
 			 description="Area of each cell (triangle) in the dual grid."
 		/>
-		<var name="edgeNormalVectors" type="real" dimensions="R3 nEdges" streams="o" units="unitless"
+		<var name="edgeNormalVectors" type="real" dimensions="R3 nEdges" streams="" units="unitless"
 			 description="Normal unit vector defined at an edge."
 		/>
-		<var name="edgeTangentVectors" type="real" dimensions="R3 nEdges" streams="o" units="unitless"
+		<var name="edgeTangentVectors" type="real" dimensions="R3 nEdges" streams="" units="unitless"
 			 description="Tangent unit vector defined at an edge."
 		/>
-		<var name="localVerticalUnitVectors" type="real" dimensions="R3 nCells" streams="o" units="unitless"
+		<var name="localVerticalUnitVectors" type="real" dimensions="R3 nCells" streams="" units="unitless"
 			 description="Unit surface normal vectors defined at cell centers."
 		/>
-		<var name="cellTangentPlane" type="real" dimensions="R3 TWO nCells" streams="o" units="unitless"
+		<var name="cellTangentPlane" type="real" dimensions="R3 TWO nCells" streams="" units="unitless"
 			 description="The two vectors that define a tangent plane at a cell center."
 		/>
 		<var name="cellsOnCell" type="integer" dimensions="maxEdges nCells" streams="iro" units="unitless"
@@ -938,13 +938,13 @@
 		<var name="kiteAreasOnVertex" type="real" dimensions="vertexDegree nVertices" streams="iro" units="m^2"
 			 description="Area of the portions of each dual cell that are part of each cellsOnVertex."
 		/>
-		<var name="fEdge" type="real" dimensions="nEdges" streams="iro" units="s^{-1}"
+		<var name="fEdge" type="real" dimensions="nEdges" streams="ir" units="s^{-1}"
 			 description="Coriolis parameter at edges."
 		/>
-		<var name="fVertex" type="real" dimensions="nVertices" streams="iro" units="s^{-1}"
+		<var name="fVertex" type="real" dimensions="nVertices" streams="ir" units="s^{-1}"
 			 description="Coriolis parameter at vertices."
 		/>
-		<var name="fCell" type="real" dimensions="nCells" streams="iro" units="s^{-1}"
+		<var name="fCell" type="real" dimensions="nCells" streams="ir" units="s^{-1}"
 			 description="Coriolis parameter at cell centers."
 		/>
 		<var name="bottomDepth" type="real" dimensions="nCells" streams="iro" units="m"
@@ -1073,58 +1073,58 @@
 			 description="model time, with format 'YYYY-MM-DD_HH:MM:SS'"
 		/>
 		<var_array name="tracersSurfaceValue" type="real" dimensions="nCells Time">
-			<var name="temperatureSurfaceValue" array_group="surfaceValues" streams="o" units="degrees Celsius" name_in_code="temperatureSurfaceValue"
+			<var name="temperatureSurfaceValue" array_group="surfaceValues" streams="" units="degrees Celsius" name_in_code="temperatureSurfaceValue"
 				description="potential temperature extrapolated to ocean surface"
 			/>
-			<var name="salinitySurfaceValue" array_group="surfaceValues" streams="o" units="PSU" name_in_code="salinitySurfaceValue"
+			<var name="salinitySurfaceValue" array_group="surfaceValues" streams="" units="PSU" name_in_code="salinitySurfaceValue"
 				description="salinity extrapolated to ocean surface"
 			/>
-			<var name="tracer1SurfaceValue" array_group="surfaceValues" streams="o" units="na"
+			<var name="tracer1SurfaceValue" array_group="surfaceValues" streams="" units="na"
 				description="Tracer of 1 extrapolated to ocean surface"
 			/>
 		</var_array>
 		<var_array name="surfaceVelocity" type="real" dimensions="nCells Time">
 			<var name="zonalSurfaceVelocity" array_group="vel_zonal" units="m s^{-1}"
 				 description="Zonal surface velocity reconstructed at cell centers"
-				 streams="o"
+				 streams=""
 			/>
 			<var name="meridionalSurfaceVelocity" array_group="vel_meridional" units="m s^{-1}"
 				 description="Meridional surface velocity reconstructed at cell centers"
-				 streams="o"
+				 streams=""
 			/>
 		</var_array>
 		<var_array name="SSHGradient" type="real" dimensions="nCells Time">
-			<var name="zonalSSHGradient" array_group="ssh_zonal" streams="o" units="m m^{-1}"
+			<var name="zonalSSHGradient" array_group="ssh_zonal" streams="" units="m m^{-1}"
 				 description="Zonal gradient of SSH reconstructed at cell centers"
 			/>
-			<var name="meridionalSSHGradient" array_group="ssh_meridional" streams="o" units="m m^{-1}"
+			<var name="meridionalSSHGradient" array_group="ssh_meridional" streams="" units="m m^{-1}"
 				 description="Meridional gradient of SSH reconstructed at cell centers"
 			/>
 		</var_array>
 		<var name="zMid" type="real" dimensions="nVertLevels nCells Time" streams="o" units="m"
 			 description="z-coordinate of the mid-depth of the layer"
 		/>
-		<var name="zTop" type="real" dimensions="nVertLevels nCells Time" streams="o" units="m"
+		<var name="zTop" type="real" dimensions="nVertLevels nCells Time" streams="" units="m"
 			 description="z-coordinate of the top of the layer"
 		/>
 
-		<var name="density" type="real" dimensions="nVertLevels nCells Time" streams="o" units="kg m^{-3}"
+		<var name="density" type="real" dimensions="nVertLevels nCells Time" streams="" units="kg m^{-3}"
 			 description="density"
 		/>
-		<var name="displacedDensity" type="real" dimensions="nVertLevels nCells Time" streams="o" units="kg m^{-3}"
+		<var name="displacedDensity" type="real" dimensions="nVertLevels nCells Time" streams="" units="kg m^{-3}"
 			 description="Density displaced adiabatically to the mid-depth one layer deeper.  That is, layer k has been displaced to the depth of layer k+1."
 		/>
-		<var name="potentialDensity" type="real" dimensions="nVertLevels nCells Time" streams="o" units="kg m^{-3}"
+		<var name="potentialDensity" type="real" dimensions="nVertLevels nCells Time" streams="" units="kg m^{-3}"
 			 description="potential density: density displaced adiabatically to the mid-depth of top layer"
 		/>
-		<var name="BruntVaisalaFreqTop" type="real" dimensions="nVertLevels nCells Time" streams="o" units="s^{-2}"
+		<var name="BruntVaisalaFreqTop" type="real" dimensions="nVertLevels nCells Time" streams="" units="s^{-2}"
 			 description="Brunt Vaisala frequency defined at the center (horizontally) and top (vertically) of cell"
 		/>
 
 		<var name="montgomeryPotential" type="real" dimensions="nVertLevels nCells Time" units="m^2 s^{-2}"
 			 description="Montgomery potential, may be used as the pressure for isopycnal coordinates."
 		/>
-		<var name="pressure" type="real" dimensions="nVertLevels nCells Time" streams="o" units="N m^{-2}"
+		<var name="pressure" type="real" dimensions="nVertLevels nCells Time" streams="" units="N m^{-2}"
 			 description="pressure used in the momentum equation"
 		/>
 
@@ -1162,10 +1162,10 @@
 			 description="kappaQ parameter for Gent-McWilliams eddy parameterization"
 		/>
 
-		<var name="viscosity" type="real" dimensions="nVertLevels nEdges Time" streams="o" units="m^2 s^{-1}"
+		<var name="viscosity" type="real" dimensions="nVertLevels nEdges Time" streams="" units="m^2 s^{-1}"
 			 description="horizontal viscosity"
 		/>
-		<var name="divergence" type="real" dimensions="nVertLevels nCells Time" streams="o" units="s^{-1}"
+		<var name="divergence" type="real" dimensions="nVertLevels nCells Time" streams="" units="s^{-1}"
 			 description="divergence of horizonal velocity"
 		/>
 		<var name="circulation" type="real" dimensions="nVertLevels nVertices Time" units="m^2 s^{-1}"
@@ -1174,7 +1174,7 @@
 		<var name="relativeVorticity" type="real" dimensions="nVertLevels nVertices Time" streams="" units="s^{-1}"
 			 description="curl of horizontal velocity, defined at vertices"
 		/>
-		<var name="relativeVorticityCell" type="real" dimensions="nVertLevels nCells Time" streams="o" units="s^{-1}"
+		<var name="relativeVorticityCell" type="real" dimensions="nVertLevels nCells Time" streams="" units="s^{-1}"
 			 description="curl of horizontal velocity, averaged from vertices to cell centers"
 		/>
 		<var name="normalizedRelativeVorticityEdge" type="real" dimensions="nVertLevels nEdges Time" units="s^{-1}"
@@ -1194,19 +1194,19 @@
 			 description="Barotropic thickness flux at each edge, used to advance sea surface height in each subcycle of stage 2 of the split-explicit algorithm."
 		/>
 
-		<var name="normalVelocityX" type="real" dimensions="nVertLevels nCells Time" units="m s^{-1}"
+		<var name="normalVelocityX" type="real" dimensions="nVertLevels nCells Time" streams="o" units="m s^{-1}"
 			 description="component of horizontal velocity in the x-direction (cartesian)"
 		/>
-		<var name="normalVelocityY" type="real" dimensions="nVertLevels nCells Time" units="m s^{-1}"
+		<var name="normalVelocityY" type="real" dimensions="nVertLevels nCells Time" streams="o" units="m s^{-1}"
 			 description="component of horizontal velocity in the y-direction (cartesian)"
 		/>
 		<var name="normalVelocityZ" type="real" dimensions="nVertLevels nCells Time" units="m s^{-1}"
 			 description="component of horizontal velocity in the z-direction (cartesian)"
 		/>
-		<var name="normalVelocityZonal" type="real" dimensions="nVertLevels nCells Time" streams="o" units="m s^{-1}"
+		<var name="normalVelocityZonal" type="real" dimensions="nVertLevels nCells Time" streams="" units="m s^{-1}"
 			 description="component of horizontal velocity in the eastward direction"
 		/>
-		<var name="normalVelocityMeridional" type="real" dimensions="nVertLevels nCells Time" streams="o" units="m s^{-1}"
+		<var name="normalVelocityMeridional" type="real" dimensions="nVertLevels nCells Time" streams="" units="m s^{-1}"
 			 description="component of horizontal velocity in the northward"
 		/>
 
@@ -1248,43 +1248,43 @@
 			 description="Bolus velocity in Gent-McWilliams eddy parameterization, meridional-direction"
 		/>
 
-		<var name="RiTopOfCell" type="real" dimensions="nVertLevelsP1 nCells Time" streams="o" units="nondimensional"
+		<var name="RiTopOfCell" type="real" dimensions="nVertLevelsP1 nCells Time" streams="" units="nondimensional"
 			 description="gradient Richardson number defined at the center (horizontally) and top (vertically)"
 		/>
 		<var name="RiTopOfEdge" type="real" dimensions="nVertLevelsP1 nEdges Time" units="nondimensional"
 			 description="gradient Richardson number defined at the edge (horizontally) and top (vertically)"
 		/>
-		<var name="vertViscTopOfEdge" type="real" dimensions="nVertLevelsP1 nEdges Time" streams="o" units="m^2 s^{-1}"
+		<var name="vertViscTopOfEdge" type="real" dimensions="nVertLevelsP1 nEdges Time" streams="" units="m^2 s^{-1}"
 			 description="vertical viscosity defined at the edge (horizontally) and top (vertically)"
 		/>
-		<var name="vertViscTopOfCell" type="real" dimensions="nVertLevelsP1 nCells Time" streams="o" units="m^2 s^{-1}"
+		<var name="vertViscTopOfCell" type="real" dimensions="nVertLevelsP1 nCells Time" streams="" units="m^2 s^{-1}"
 			 description="vertical viscosity defined at the cell center (horizontally) and top (vertically)"
 		/>
-		<var name="vertDiffTopOfCell" type="real" dimensions="nVertLevelsP1 nCells Time" streams="o" units="m^2 s^{-1}"
+		<var name="vertDiffTopOfCell" type="real" dimensions="nVertLevelsP1 nCells Time" streams="" units="m^2 s^{-1}"
 			 description="vertical diffusion defined at the cell center (horizontally) and top (vertically)"
 		/>
-		<var name="bulkRichardsonNumber" type="real" dimensions="nVertLevels nCells Time" streams="o" units="nondimensional"
+		<var name="bulkRichardsonNumber" type="real" dimensions="nVertLevels nCells Time" streams="" units="nondimensional"
 			 description="bulk Richardson number"
 		/>
-		<var name="boundaryLayerDepth" type="real" dimensions="nCells Time" streams="o" units="m"
+		<var name="boundaryLayerDepth" type="real" dimensions="nCells Time" streams="" units="m"
 			 description="diagnosed depth of the ocean surface boundary layer"
 		/>
-		<var name="indexBoundaryLayerDepth" type="real" dimensions="nCells Time" streams="o" units="none"
+		<var name="indexBoundaryLayerDepth" type="real" dimensions="nCells Time" streams="" units="none"
 			 description="int(indexBoundaryLayerDepth) is vertical layer within which boundaryLayerDepth resides. mod(indexBoundaryLayerDepth) is fractional position within that layer."
 		/>
-		<var name="surfaceFrictionVelocity" type="real" dimensions="nCells Time" streams="o" units="m s^{-1}"
+		<var name="surfaceFrictionVelocity" type="real" dimensions="nCells Time" streams="" units="m s^{-1}"
 			 description="diagnosed surface friction velocity defined as square root of (mag(wind stress) / reference density)"
 		/>
-		<var name="windStressZonalDiag" type="real" dimensions="nCells Time" streams="o" units="N m^{-2}"
+		<var name="windStressZonalDiag" type="real" dimensions="nCells Time" streams="" units="N m^{-2}"
 			 description="reconstructed surface wind stress in the eastward direction. Used for diagnostics."
 		/>
-		<var name="windStressMeridionalDiag" type="real" dimensions="nCells Time" streams="o" units="N m^{-2}"
+		<var name="windStressMeridionalDiag" type="real" dimensions="nCells Time" streams="" units="N m^{-2}"
 			 description="reconstructed surface wind stress in the northward direction. User for diagnostics."
 		/>
 		<var name="penetrativeTemperatureFluxOBL" type="real" dimensions="nCells Time" units="^\circ C m s^{-1}"
 			 description="Penetrative temperature flux at the bottom of boundary layer due to solar radiation. Positive is into the ocean."
 		/>
-		<var name="buoyancyForcingOBL" type="real" dimensions="nCells Time" streams="o" units="m s^{-3}"
+		<var name="buoyancyForcingOBL" type="real" dimensions="nCells Time" streams="" units="m s^{-3}"
 			 description="diagnosed buoyancy forcing due to heat, salt and freshwater fluxes averaged over ocean boundary layer depth"
 		/>
 
@@ -1311,31 +1311,31 @@
 		<var name="nAverage" type="real" dimensions="Time" streams="o" units="unitless"
 			 description="number of timesteps in time-averaged variables"
 		/>
-		<var name="avgSsh" type="real" dimensions="nCells Time" streams="o" units="m"
+		<var name="avgSsh" type="real" dimensions="nCells Time" streams="" units="m"
 			 description="time-averaged sea surface height"
 		/>
-		<var name="varSsh" type="real" dimensions="nCells Time" streams="o" units="m"
+		<var name="varSsh" type="real" dimensions="nCells Time" streams="" units="m"
 			 description="variance of sea surface height"
 		/>
-		<var name="avgVelocityZonal" type="real" dimensions="nVertLevels nCells Time" streams="o" units="m s^{-1}"
+		<var name="avgVelocityZonal" type="real" dimensions="nVertLevels nCells Time" streams="" units="m s^{-1}"
 			 description="time-averaged velocity in the eastward direction"
 		/>
-		<var name="avgVelocityMeridional" type="real" dimensions="nVertLevels nCells Time" streams="o" units="m s^{-1}"
+		<var name="avgVelocityMeridional" type="real" dimensions="nVertLevels nCells Time" streams="" units="m s^{-1}"
 			 description="time-averaged velocity in the northward direction"
 		/>
-		<var name="varVelocityZonal" type="real" dimensions="nVertLevels nCells Time" streams="o" units="m s^{-1}"
+		<var name="varVelocityZonal" type="real" dimensions="nVertLevels nCells Time" streams="" units="m s^{-1}"
 			 description="variance of velocity in the eastward direction"
 		/>
-		<var name="varVelocityMeridional" type="real" dimensions="nVertLevels nCells Time" streams="o" units="m s^{-1}"
+		<var name="varVelocityMeridional" type="real" dimensions="nVertLevels nCells Time" streams="" units="m s^{-1}"
 			 description="variance of velocity in the northward direction"
 		/>
-		<var name="avgNormalVelocity" type="real" dimensions="nVertLevels nEdges Time" streams="o" units="m s^{-1}"
+		<var name="avgNormalVelocity" type="real" dimensions="nVertLevels nEdges Time" streams="" units="m s^{-1}"
 			 description="time-averaged velocity, normal to cell edge"
 		/>
-		<var name="varNormalVelocity" type="real" dimensions="nVertLevels nEdges Time" streams="o" units="m s^{-1}"
+		<var name="varNormalVelocity" type="real" dimensions="nVertLevels nEdges Time" streams="" units="m s^{-1}"
 			 description="variance of velocity, normal to cell edge"
 		/>
-		<var name="avgVertVelocityTop" type="real" dimensions="nVertLevelsP1 nCells Time" streams="o" units="m s^{-1}"
+		<var name="avgVertVelocityTop" type="real" dimensions="nVertLevelsP1 nCells Time" streams="" units="m s^{-1}"
 			 description="time-averaged vertical velocity at top of cell"
 		/>
 	</var_struct>
@@ -1343,20 +1343,20 @@
 		<var name="surfaceWindStress" type="real" dimensions="nEdges Time" units="N m^{-2}" streams="ir"
 			 description="Wind stress at the surface of the ocean defined at edge midpoints. Magintude in direction of edge normal."
 		/>
-		<var name="surfaceWindStressMagnitude" type="real" dimensions="nCells Time" units="N m^{-2}" streams="o"
+		<var name="surfaceWindStressMagnitude" type="real" dimensions="nCells Time" units="N m^{-2}" streams=""
 			 description="Magnitude of wind stress at the surface of the ocean, at cell centers."
 		/>
-		<var name="surfaceMassFlux" type="real" dimensions="nCells Time" units="m s^{-1}" streams="o"
+		<var name="surfaceMassFlux" type="real" dimensions="nCells Time" units="m s^{-1}" streams=""
 			 description="Flux of mass through the ocean surface. Positive into ocean."
 		/>
 		<var_array name="surfaceTracerFlux" type="real" dimensions="nCells Time">
-			<var name="surfaceTemperatureFlux" array_group="dynamics" units="^\circ C m s^{-1}" streams="o"
+			<var name="surfaceTemperatureFlux" array_group="dynamics" units="^\circ C m s^{-1}" streams=""
 				 description="Flux of temperature through the ocean surface. Positive into ocean."
 			/>
-			<var name="surfaceSalinityFlux" array_group="dynamics" units="PSU m s^{-1}" streams="o"
+			<var name="surfaceSalinityFlux" array_group="dynamics" units="PSU m s^{-1}" streams=""
 				 description="Flux of salinity through the ocean surface. Positive into ocean."
 			/>
-			<var name="surfaceTracer1Flux" array_group="testing" units="percent" streams="o"
+			<var name="surfaceTracer1Flux" array_group="testing" units="percent" streams=""
 				 description="Flux of tracer1 through the ocean surface. Positive into ocean."
 			/>
 		</var_array>
@@ -1364,91 +1364,91 @@
 		<var name="seaSurfacePressure" type="real" dimensions="nCells Time" streams="or" units="Pa"
 			 description="Pressure defined at the sea surface."
 		/>
-		<var name="seaIceEnergy" type="real" dimensions="nCells Time" units="J m^{-2}" streams="o"
+		<var name="seaIceEnergy" type="real" dimensions="nCells Time" units="J m^{-2}" streams=""
 			 description="Energy per unit area trapped in frazil ice formation. Always $\ge$ 0.0."
 		/>
-		<var name="penetrativeTemperatureFlux" type="real" dimensions="nCells Time" units="^\circ C m s^{-1}" streams="o"
+		<var name="penetrativeTemperatureFlux" type="real" dimensions="nCells Time" units="^\circ C m s^{-1}" streams=""
 			 description="Penetrative temperature flux at the surface due to solar radiation. Positive is into the ocean."
 		/>
-		<var name="transmissionCoefficients" type="real" dimensions="nVertLevels nCells Time" units="percent" streams="o"
+		<var name="transmissionCoefficients" type="real" dimensions="nVertLevels nCells Time" units="percent" streams=""
 			 description="Divergence of transmission through interfaces of surface fluxes below the surface layer at cell centers. These are not applied to short wave."
 		/>
 
 		<!-- Input fields for coupling -->
 		<!-- Coupling fields associated with wind stress -->
-		<var name="windStressZonal" type="real" dimensions="nCells Time" units="N m^{-2}" streams="o"
+		<var name="windStressZonal" type="real" dimensions="nCells Time" units="N m^{-2}" streams=""
 			 description="Zonal (eastward) component of wind stress at cell centers from coupler. Positive eastward."
 		/>
-		<var name="windStressMeridional" type="real" dimensions="nCells Time" units="N m^{-2}" streams="o"
+		<var name="windStressMeridional" type="real" dimensions="nCells Time" units="N m^{-2}" streams=""
 			 description="Meridional (northward) component of wind stress at cell centers from coupler. Positive northward."
 		/>
 
 		<!-- Coupling fields associated with heat fluxes -->
-		<var name="latentHeatFlux" type="real" dimensions="nCells Time" units="W m^{-2}" streams="o"
+		<var name="latentHeatFlux" type="real" dimensions="nCells Time" units="W m^{-2}" streams=""
 			 description="Latent heat flux at cell centers from coupler. Positive into the ocean."
 		/>
-		<var name="sensibleHeatFlux" type="real" dimensions="nCells Time" units="W m^{-2}" streams="o"
+		<var name="sensibleHeatFlux" type="real" dimensions="nCells Time" units="W m^{-2}" streams=""
 			 description="Sensible heat flux at cell centers from coupler. Positive into the ocean."
 		/>
-		<var name="longWaveHeatFluxUp" type="real" dimensions="nCells Time" units="W m^{-2}" streams="o"
+		<var name="longWaveHeatFluxUp" type="real" dimensions="nCells Time" units="W m^{-2}" streams=""
 			 description="Upward long wave heat flux at cell centers from coupler. Positive into the ocean."
 		/>
-		<var name="longWaveHeatFluxDown" type="real" dimensions="nCells Time" units="W m^{-2}" streams="o"
+		<var name="longWaveHeatFluxDown" type="real" dimensions="nCells Time" units="W m^{-2}" streams=""
 			 description="Downward long wave heat flux at cell centers from coupler. Positive into the ocean."
 		/>
-		<var name="seaIceHeatFlux" type="real" dimensions="nCells Time" units="W m^{-2}" streams="o"
+		<var name="seaIceHeatFlux" type="real" dimensions="nCells Time" units="W m^{-2}" streams=""
 			 description="Sea ice heat flux at cell centers from coupler. Positive into the ocean."
 		/>
-		<var name="shortWaveHeatFlux" type="real" dimensions="nCells Time" units="W m^{-2}" streams="o"
+		<var name="shortWaveHeatFlux" type="real" dimensions="nCells Time" units="W m^{-2}" streams=""
 			 description="Short wave flux at cell centers from coupler. Positive into the ocean."
 		/>
 
 		<!-- Coupling fields associated with mass or salinity fluxes -->
-		<var name="evaporationFlux" type="real" dimensions="nCells Time" units="kg m^{-2} s^{-1}" streams="o"
+		<var name="evaporationFlux" type="real" dimensions="nCells Time" units="kg m^{-2} s^{-1}" streams=""
 			 description="Evaporation flux at cell centers from coupler. Positive into the ocean."
 		/>
-		<var name="seaIceSalinityFlux" type="real" dimensions="nCells Time" units="kg m^{-2} s^{-1}" streams="o"
+		<var name="seaIceSalinityFlux" type="real" dimensions="nCells Time" units="kg m^{-2} s^{-1}" streams=""
 			 description="Sea ice salinity flux at cell centers from coupler. Positive into the ocean."
 		/>
-		<var name="seaIceFreshWaterFlux" type="real" dimensions="nCells Time" units="kg m^{-2} s^{-1}" streams="o"
+		<var name="seaIceFreshWaterFlux" type="real" dimensions="nCells Time" units="kg m^{-2} s^{-1}" streams=""
 			 description="Fresh water flux from sea ice at cell centers from coupler. Positive into the ocean."
 		/>
-		<var name="riverRunoffFlux" type="real" dimensions="nCells Time" units="kg m^{-2} s^{-1}" streams="o"
+		<var name="riverRunoffFlux" type="real" dimensions="nCells Time" units="kg m^{-2} s^{-1}" streams=""
 			 description="Fresh water flux from river runoff at cell centers from coupler. Positive into the ocean."
 		/>
-		<var name="iceRunoffFlux" type="real" dimensions="nCells Time" units="kg m^{-2} s^{-1}" streams="o"
+		<var name="iceRunoffFlux" type="real" dimensions="nCells Time" units="kg m^{-2} s^{-1}" streams=""
 			 description="Fresh water flux from ice runoff at cell centers from coupler. Positive into the ocean."
 		/>
-		<var name="rainFlux" type="real" dimensions="nCells Time" units="kg m^{-2} s^{-1}" streams="o"
+		<var name="rainFlux" type="real" dimensions="nCells Time" units="kg m^{-2} s^{-1}" streams=""
 			 description="Fresh water flux from rain at cell centers from coupler. Positive into the ocean."
 		/>
-		<var name="snowFlux" type="real" dimensions="nCells Time" units="kg m^{-2} s^{-1}" streams="o"
+		<var name="snowFlux" type="real" dimensions="nCells Time" units="kg m^{-2} s^{-1}" streams=""
 			 description="Fresh water flux from snow at cell centers from coupler. Positive into the ocean."
 		/>
 
 		<!-- Misc. coupling fields -->
-		<var name="iceFraction" type="real" dimensions="nCells Time" units="percent" streams="o"
+		<var name="iceFraction" type="real" dimensions="nCells Time" units="percent" streams=""
 			 description="Fraction of sea ice coverage at cell centers from coupler. Positive into the ocean."
 		/>
-		<var name="prognosticCO2" type="real" dimensions="nCells Time" units="1e-6 mol mol^{-1}" streams="o"
+		<var name="prognosticCO2" type="real" dimensions="nCells Time" units="1e-6 mol mol^{-1}" streams=""
 			 description="Prognostic CO2 at cell centers from coupler. Positive into the ocean."
 		/>
-		<var name="diagnosticCO2" type="real" dimensions="nCells Time" units="1e-6 mol mol^{-1}" streams="o"
+		<var name="diagnosticCO2" type="real" dimensions="nCells Time" units="1e-6 mol mol^{-1}" streams=""
 			 description="Diagnostic CO2 at cell centers from coupler. Positive into the ocean."
 		/>
-		<var name="squaredWindSpeed10Meter" type="real" dimensions="nCells Time" units="m^2 s^{-2}" streams="o"
+		<var name="squaredWindSpeed10Meter" type="real" dimensions="nCells Time" units="m^2 s^{-2}" streams=""
 			 description="Squared wind speed at 10 meters at cell centers from coupler."
 		/>
 
 		<!-- Output fields for coupling -->
-		<var name="nAccumulatedCoupled" type="integer" dimensions="Time" units="unitless" streams="o"
+		<var name="nAccumulatedCoupled" type="integer" dimensions="Time" units="unitless" streams=""
 			 description="Number of accumulations in time averaging of coupler fields"
 		/>
 		<var_array name="avgTracersSurfaceValue" type="real" dimensions="nCells Time">
-			<var name="avgTemperatureSurfaceValue" array_group="surfaceValues" units="degrees Celsius" name_in_code="temperatureSurfaceValue" streams="o"
+			<var name="avgTemperatureSurfaceValue" array_group="surfaceValues" units="degrees Celsius" name_in_code="temperatureSurfaceValue" streams=""
 				 description="Time averaged potential temperature extrapolated to ocean surface"
 			/>
-			<var name="avgSalinitySurfaceValue" array_group="surfaceValues" units="PSU" name_in_code="salinitySurfaceValue" streams="o"
+			<var name="avgSalinitySurfaceValue" array_group="surfaceValues" units="PSU" name_in_code="salinitySurfaceValue" streams=""
 				 description="Time averaged salinity extrapolated to ocean surface"
 			/>
 			<var name="avgTracer1SurfaceValue" array_group="surfaceValues" units="percent"
@@ -1456,25 +1456,25 @@
 			/>
 		</var_array>
 		<var_array name="avgSurfaceVelocity" type="real" dimensions="nCells Time">
-		<var name="avgZonalSurfaceVelocity" array_group="vel_zonal" units="m s^{-1}" streams="o"
+		<var name="avgZonalSurfaceVelocity" array_group="vel_zonal" units="m s^{-1}" streams=""
 			 description="Time averaged zonal surface velocity"
 		/>
-		<var name="avgMeridionalSurfaceVelocity" array_group="vel_meridional" units="m s^{-1}" streams="o"
+		<var name="avgMeridionalSurfaceVelocity" array_group="vel_meridional" units="m s^{-1}" streams=""
 			 description="Time averaged meridional surface velocity"
 		/>
 		</var_array>
 		<var_array name="avgSSHGradient" type="real" dimensions="nCells Time">
-			<var name="avgZonalSSHGradient" array_group="ssh_zonal" units="m m^{-1}" streams="o"
+			<var name="avgZonalSSHGradient" array_group="ssh_zonal" units="m m^{-1}" streams=""
 				 description="Time averaged zonal gradient of SSH"
 			/>
-			<var name="avgMeridionalSSHGradient" array_group="ssh_meridional" units="m m^{-1}" streams="o"
+			<var name="avgMeridionalSSHGradient" array_group="ssh_meridional" units="m m^{-1}" streams=""
 				 description="Time averaged meridional gradient of SSH"
 			/>
 		</var_array>
-		<var name="CO2Flux" type="real" dimensions="nCells Time" units="mol m^{-2} s^{-1}" streams="o"
+		<var name="CO2Flux" type="real" dimensions="nCells Time" units="mol m^{-2} s^{-1}" streams=""
 			 description="CO2 Flux."
 		/>
-		<var name="DMSFlux" type="real" dimensions="nCells Time" units="mol m^{-2} s^{-1}" streams="o"
+		<var name="DMSFlux" type="real" dimensions="nCells Time" units="mol m^{-2} s^{-1}" streams=""
 			 description="DMS Flux."
 		/>
 	</var_struct>
@@ -1518,12 +1518,12 @@
 		/>
 		<var name="thermalExpansionCoeff" 
 			 persistence="persistent"
-			 type="real" dimensions="nVertLevels nCells Time" streams="o" units="C^{-1}"
+			 type="real" dimensions="nVertLevels nCells Time" streams="" units="C^{-1}"
 			 description="Thermal expansion coefficient (alpha), defined as $-1/\rho d\rho/dT$ (note negative sign)."
 		/>
 		<var name="salineContractionCoeff" 
 			 persistence="persistent"
-			 type="real" dimensions="nVertLevels nCells Time" streams="o" units="PSU^{-1}"
+			 type="real" dimensions="nVertLevels nCells Time" streams="" units="PSU^{-1}"
 			 description="Saline contraction coefficient (beta), defined as $1/\rho d\rho/dS$.  This is also called the haline contraction coefficient."
 		/>
 
