@@ -801,8 +801,14 @@ module mpas_core
                      maxLevelCell(iCell) = maxLevelCell(iCell) - 1
                      bottomDepth(iCell) = refBottomDepth(maxLevelCell(iCell))
                   elseif (bottomDepth(iCell).lt.minBottomDepth(k)) then
-                     ! Round down cell to the min_pbc_fraction.
-                     bottomDepth(iCell) = minBottomDepth(k)
+                     if (config_round_pbcs_up) then
+                        ! Round up to cell above
+                        maxLevelCell(iCell) = maxLevelCell(iCell) - 1
+                        bottomDepth(iCell) = refBottomDepth(maxLevelCell(iCell))
+                     else
+                        ! Round down cell to the min_pbc_fraction.
+                        bottomDepth(iCell) = minBottomDepth(k)
+                     endif
                   endif
                   ! reset k to new value of maxLevelCell
                   k = maxLevelCell(iCell)

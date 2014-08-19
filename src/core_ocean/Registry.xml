@@ -191,6 +191,10 @@
 					description="Determines the minimum fraction of a cell altering the initial conditions can create.  The alteration of layer thickness only occurs when config_do_restart is false, i.e. on an initial run."
 					possible_values="Any real between 0 and 1."
 		/>
+		<nml_option name="config_round_pbcs_up" type="logical" default_value=".false." units="unitless"
+					description="If true, all pbcs are rounded up to top of cell.  If false, half go up, half go down."
+					possible_values=".true. or .false."
+		/>
 		<nml_option name="config_check_ssh_consistency" type="logical" default_value=".true." units="unitless"
 					description="Enables a check to determine if the SSH is within 2m of the surface, as specified in (\ref{ocean:pbc SSH})."
 					possible_values=".true. or .false."
