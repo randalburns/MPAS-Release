@@ -833,7 +833,9 @@ module ocn_time_integration_split
                      ! Set u to inflow value, but only below the specified depth.
                      do k=1,block % mesh % maxLevelEdgeTop % array(iEdge)
                         !if ( -block % mesh % refBottomDepth % array(k) .gt. zInflowTop) then !CASE 1 and 3
-                        if ( -(block % mesh % refBottomDepth % array(k) + block % verticalMesh % refZMid % array(k)) .gt. zInflowTop) then !CASE 0 and 2
+                        !if ( -(block % mesh % refBottomDepth % array(k) + block % verticalMesh % refZMid % array(k)) .gt. zInflowTop) then !CASE 0 and 2
+                        ! changed for sigma coordinates:
+                        if ( -(config_inflow_embayment_depth*(k-0.5)/block % mesh % maxLevelEdgeTop % array(iEdge)) .gt. zInflowTop) then !CASE 0 and 3
                            block % diagnostics % uTransport % array(k,iEdge) = 0.0
                         else
                            block % diagnostics % uTransport % array(k,iEdge) = uInflow
@@ -1085,7 +1087,10 @@ module ocn_time_integration_split
                   do k=1,block % mesh % maxLevelCell % array(iCell)
 
                      ! this is h_{n+1}
-                     block % state % time_levs(2) % state % layerThickness % array(k,iCell) = block % verticalMesh % refLayerThickness % array(k)
+                     ! the following line works for z-level and z-star, but not sigma
+                     !block % state % time_levs(2) % state % layerThickness % array(k,iCell) = block % verticalMesh % refLayerThickness % array(k)
+                     block % state % time_levs(2) % state % layerThickness % array(k,iCell) = &
+                        config_inflow_embayment_depth / block % mesh % maxLevelCell % array(iCell)
 
                      ! This is Phi at n+1
                      block % state % time_levs(2) % state % tracers % array(indexT,k,iCell) = config_inflow_temperature
