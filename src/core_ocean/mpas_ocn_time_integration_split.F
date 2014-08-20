@@ -100,7 +100,7 @@ module ocn_time_integration_split
       type (block_type), pointer :: block
       real (kind=RKIND) :: normalThicknessFluxSum, thicknessSum, flux, sshEdge, hEdge1, &
                  CoriolisTerm, uCorr, temp, temp_h, coef, barotropicThicknessFlux_coeff, sshCell1, sshCell2, &
-                 zInflowTop, uInflow
+                 zInflowTop, uInflow, inflowFluxBlock, inflowFlux
       integer :: num_tracers, ucorr_coef, err
       real (kind=RKIND), dimension(:,:), pointer :: &
                  u, h, layerThicknessEdge, vertViscTopOfEdge, vertDiffTopOfCell
@@ -816,6 +816,7 @@ module ocn_time_integration_split
                !
                !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
+               inflowFluxBlock = 0.0
                if (config_use_dome_inflow) then
                  do iEdge=1,block % mesh % nEdges
                    if (block % mesh % yEdge % array(iEdge) .gt. config_inflow_min_y ) then
@@ -861,13 +862,29 @@ module ocn_time_integration_split
                         - block % state % time_levs(2) % state % normalBarotropicVelocity % array(iEdge) 
                      enddo
 
-                   endif
+                     ! compute total inflow flux:
+                     ! check if this edge is in the first row on the boundary
+                     if (block % mesh % yEdge % array(iEdge) .lt. config_inflow_min_y + block % mesh % dvEdge % array(1) ) then
+                        do k=1,block % mesh % maxLevelEdgeTop % array(iEdge)
+                           ! inflow flux = dz * dx * u
+                           inflowFluxBlock = inflowFluxBlock + block % diagnostics % layerThicknessEdge % array(k,iEdge) &
+                                * block % mesh % dvEdge % array(iEdge) &
+                                * abs(block % diagnostics % uTransport % array(k,iEdge))
+                        enddo
+                     endif
+                  endif
                  end do ! iEdge
                endif
                !  mrp for DOME 3D overflow problem only end
 
                block => block % next
             end do  ! block
+
+            call mpas_dmpar_sum_real(dminfo, inflowFluxBlock, inflowFlux)
+
+            print *, 'inflowFluxBlock',inflowFluxBlock
+            print *, 'inflowFlux',inflowFlux
+
 
          endif ! split_explicit  
 
