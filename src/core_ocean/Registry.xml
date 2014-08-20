@@ -673,8 +673,32 @@
 		            description="This is L_\rho in equation 3 of Legg et al. 2006."
 		            possible_values="any positive real"
 		/>
-		<nml_option name="config_inflow_x0" type="real" default_value="1600.0" units="m"
+		<nml_option name="config_inflow_x0" type="real" default_value="1600.0e3" units="m"
 		            description="X-coordinate where embayment begins in DOME test case inflow region."
+		            possible_values="any positive real"
+		/>
+		<nml_option name="config_inflow_delta_T" type="real" default_value="10.0" units="C"
+		            description="temperature difference, surface to inflow"
+		            possible_values="any positive real"
+		/>
+		<nml_option name="config_inflow_surface_T" type="real" default_value="15.0" units="C"
+		            description="surface temperature for inflow function."
+		            possible_values="any positive real"
+		/>
+		<nml_option name="config_inflow_coriolis" type="real" default_value="1.0e-4" units="s^{-1}"
+		            description="Coriolis value"
+		            possible_values="any positive real"
+		/>
+		<nml_option name="config_inflow_Rim" type="real" default_value="0.33333" units="na"
+		            description="Richardson cut-off for F function"
+		            possible_values="any positive real"
+		/>
+		<nml_option name="config_inflow_N" type="real" default_value="1.0e-4" units="s^{-1}"
+		            description="B-V freq for inflow parameters"
+		            possible_values="any positive real"
+		/>
+		<nml_option name="config_inflow_delta_b" type="real" default_value="0.019" units="ms^{-2}"
+		            description="delta buoyancy for inflow"
 		            possible_values="any positive real"
 		/>
 	</nml_record>
