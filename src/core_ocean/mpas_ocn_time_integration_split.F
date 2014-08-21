@@ -542,12 +542,6 @@ module ocn_time_integration_split
                        = block % state % time_levs(oldBtrSubcycleTime) % state % sshSubcycle % array(iCell) & 
                        + dt/config_n_btr_subcycles * block % tend % ssh % array(iCell) / block % mesh % areaCell % array (iCell)
 
-                   ! for DOME inflow only:      
-                   if (config_use_dome_inflow.and.config_inflow_control_ssh.and. &
-                       block % mesh % yCell % array(iCell) .gt. config_inflow_min_y- block % mesh % dcEdge % array(1)) then
-                      block % state % time_levs(newBtrSubcycleTime) % state % sshSubcycle % array(iCell) = 0.0
-                   endif
-
                 end do
       
                 block => block % next
@@ -693,13 +687,6 @@ module ocn_time_integration_split
                     block % state % time_levs(newBtrSubcycleTime) % state % sshSubcycle % array(iCell) & 
                           = block % state % time_levs(oldBtrSubcycleTime) % state % sshSubcycle % array(iCell) & 
                           + dt/config_n_btr_subcycles * block % tend % ssh % array(iCell) / block % mesh % areaCell % array (iCell)
-
-                   ! for DOME inflow only:      
-                   if (config_use_dome_inflow.and.config_inflow_control_ssh.and. &
-                       block % mesh % yCell % array(iCell) .gt. config_inflow_min_y- block % mesh % dcEdge % array(1)) then
-                      block % state % time_levs(newBtrSubcycleTime) % state % sshSubcycle % array(iCell) = 0.0
-                   endif
-
                   end do
       
                   block => block % next
