@@ -902,7 +902,6 @@ module ocn_time_integration_split
                   endif
                  end do ! iEdge
                endif
-               !  mrp for DOME 3D overflow problem only end
 
                block => block % next
             end do  ! block
@@ -911,6 +910,65 @@ module ocn_time_integration_split
 
             print *, 'inflowFlux',inflowFlux
 
+            block => domain % blocklist
+            do while (associated(block))
+
+               if (config_use_dome_inflow) then
+
+                  if (config_normalize_inflow) then
+
+                     inflowFluxBlock = 0.0
+
+                     do iEdge=1,block % mesh % nEdges
+                        if (block % mesh % yEdge % array(iEdge) .gt. config_inflow_min_y ) then
+
+                           do k=1,block % mesh % maxLevelEdgeTop % array(iEdge)
+                              block % diagnostics % uTransport % array(k,iEdge) = config_inflow_flux/inflowFlux * block % diagnostics % uTransport % array(k,iEdge) 
+                           enddo
+
+                           ! Compute btr/bcl splitting
+                           normalThicknessFluxSum = block % diagnostics % layerThicknessEdge % array(1,iEdge) &
+                                *block % diagnostics % uTransport % array(1,iEdge)
+                           thicknessSum  = block % diagnostics % layerThicknessEdge % array(1,iEdge)
+
+                           do k=2,block % mesh % maxLevelEdgeTop % array(iEdge)
+                              normalThicknessFluxSum = normalThicknessFluxSum + block % diagnostics % layerThicknessEdge % array(k,iEdge) &
+                                   *block % diagnostics % uTransport % array(k,iEdge)
+                              thicknessSum  =  thicknessSum + block % diagnostics % layerThicknessEdge % array(k,iEdge)
+                           enddo
+
+                           block % state % time_levs(2) % state % normalBarotropicVelocity % array(iEdge) = normalThicknessFluxSum/thicknessSum
+
+                           do k=1,block % mesh % maxLevelEdgeTop % array(iEdge)
+                              block % state % time_levs(2) % state % normalBaroclinicVelocity % array(k,iEdge) &
+                                   = block % diagnostics % uTransport % array(k,iEdge) &
+                                   - block % state % time_levs(2) % state % normalBarotropicVelocity % array(iEdge) 
+                           enddo
+
+                           ! delete this later:
+                           ! compute total inflow flux:
+                           ! check if this edge is in the first row on the boundary
+                           if (block % mesh % yEdge % array(iEdge) .lt. config_inflow_min_y + block % mesh % dvEdge % array(1) ) then
+                              do k=1,block % mesh % maxLevelEdgeTop % array(iEdge)
+                                 ! inflow flux = dz * dx * u
+                                 inflowFluxBlock = inflowFluxBlock + block % diagnostics % layerThicknessEdge % array(k,iEdge) &
+                                      * block % mesh % dvEdge % array(iEdge) &
+                                      * abs(block % diagnostics % uTransport % array(k,iEdge))
+                              enddo
+                           endif
+                        endif
+                     end do ! iEdge
+                  endif
+               endif
+
+               ! delete this later:
+               call mpas_dmpar_sum_real(dminfo, inflowFluxBlock, inflowFlux)
+               print *, 'inflowFlux after normalize',inflowFlux
+
+               block => block % next
+            end do  ! block
+
+            !  mrp for DOME 3D overflow problem only end
 
          endif ! split_explicit  
 

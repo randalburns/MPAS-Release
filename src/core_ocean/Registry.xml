@@ -701,6 +701,14 @@
 		            description="delta buoyancy for inflow"
 		            possible_values="any positive real"
 		/>
+		<nml_option name="config_normalize_inflow" type="logical" default_value=".false." units="unitless"
+		            description="If true, normalize inflow at boundary for the DOME 3D overflow test case."
+		            possible_values=".true. or .false."
+		/>
+		<nml_option name="config_inflow_flux" type="real" default_value="8.64e+06" units="m^3s^{-1}"
+		            description="inflow vlue for normalization"
+		            possible_values="any positive real"
+		/>
 	</nml_record>
 	<nml_record name="debug">
 		<nml_option name="config_check_zlevel_consistency" type="logical" default_value=".false." units="unitless"
