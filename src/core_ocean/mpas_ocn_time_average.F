@@ -24,6 +24,8 @@ module ocn_time_average
         real (kind=RKIND), dimension(:,:), pointer :: avgVelocityZonal, avgVelocityMeridional, varVelocityZonal, varVelocityMeridional
         real (kind=RKIND), dimension(:,:), pointer :: avgNormalVelocity, varNormalVelocity, avgVertVelocityTop
 
+        real (kind=RKIND), dimension(:,:), pointer :: avgVelocityX, avgTemperature, avgTracer1, avgLayerThickness, avgPlumeVelocityX, avgNPlumeVelocityX
+
         nAverage => average % nAverage % scalar
 
         avgSSH                => average % avgSSH % array
@@ -36,6 +38,13 @@ module ocn_time_average
         varNormalVelocity     => average % varNormalVelocity % array
         avgVertVelocityTop    => average % avgVertVelocityTop % array
 
+        avgVelocityX    => average % avgVelocityX % array
+        avgTemperature    => average % avgTemperature % array
+        avgTracer1    => average % avgTracer1 % array
+        avgLayerThickness    => average % avgLayerThickness % array
+        avgPlumeVelocityX    => average % avgPlumeVelocityX % array
+        avgNPlumeVelocityX    => average % avgNPlumeVelocityX % array
+
         nAverage = 0
 
         avgSSH = 0.0
@@ -47,6 +56,13 @@ module ocn_time_average
         avgNormalVelocity = 0.0
         varNormalVelocity = 0.0
         avgVertVelocityTop = 0.0
+
+        avgVelocityX = 0.0 
+        avgTemperature = 0.0 
+        avgTracer1 = 0.0 
+        avgLayerThickness = 0.0 
+        avgPlumeVelocityX = 0.0
+        avgNPlumeVelocityX = 0.0
 
     end subroutine ocn_time_average_init!}}}
 
@@ -68,6 +84,8 @@ module ocn_time_average
         real (kind=RKIND), dimension(:,:), pointer :: old_avgVelocityZonal, old_avgVelocityMeridional, old_varVelocityZonal, old_varVelocityMeridional
         real (kind=RKIND), dimension(:), pointer :: old_avgSSH, old_varSSH
 
+        real (kind=RKIND), dimension(:,:), pointer :: avgVelocityX, avgTemperature, avgTracer1, avgLayerThickness, avgPlumeVelocityX, avgNPlumeVelocityX
+
         nAverage     => average % nAverage  % scalar
 
         normalVelocity  => state % normalVelocity % array
@@ -87,6 +105,13 @@ module ocn_time_average
         varNormalVelocity        => average % varNormalVelocity % array
         avgVertVelocityTop       => average % avgVertVelocityTop % array
 
+        avgVelocityX    => average % avgVelocityX % array
+        avgTemperature    => average % avgTemperature % array
+        avgTracer1    => average % avgTracer1 % array
+        avgLayerThickness    => average % avgLayerThickness % array
+        avgPlumeVelocityX    => average % avgPlumeVelocityX % array
+        avgNPlumeVelocityX    => average % avgNPlumeVelocityX % array
+
         avgSSH = avgSSH + ssh
         varSSH = varSSH + ssh**2
         avgVelocityZonal = avgVelocityZonal + normalVelocityZonal
@@ -96,6 +121,16 @@ module ocn_time_average
         avgNormalVelocity = avgNormalVelocity + normalVelocity
         varNormalVelocity = varNormalVelocity + normalVelocity**2
         avgVertVelocityTop = avgVertVelocityTop + vertVelocityTop
+
+        avgVelocityX    = avgVelocityX + diagnostics % normalVelocityX % array
+        avgTemperature    = avgTemperature + state % tracers % array(1,:,:)
+        avgTracer1    = avgTracer1 + state % tracers % array(3,:,:)
+        avgLayerThickness    = avgLayerThickness + state % layerThickness % array
+
+        where(state % tracers % array(3,:,:).gt.0.01)
+           avgPlumeVelocityX    = avgPlumeVelocityX + diagnostics % normalVelocityX % array
+           avgNPlumeVelocityX    = avgNPlumeVelocityX + 1.0
+        end where
 
         nAverage = nAverage + 1
     end subroutine ocn_time_average_accumulate!}}}
@@ -109,6 +144,8 @@ module ocn_time_average
         real (kind=RKIND), dimension(:,:), pointer :: avgVelocityZonal, avgVelocityMeridional, varVelocityZonal, varVelocityMeridional
         real (kind=RKIND), dimension(:,:), pointer :: avgNormalVelocity, varNormalVelocity, avgVertVelocityTop
 
+        real (kind=RKIND), dimension(:,:), pointer :: avgVelocityX, avgTemperature, avgTracer1, avgLayerThickness, avgPlumeVelocityX, avgNPlumeVelocityX
+
         nAverage => average % nAverage  % scalar
 
         avgSSH                => average % avgSSH % array
@@ -121,6 +158,13 @@ module ocn_time_average
         varNormalVelocity     => average % varNormalVelocity % array
         avgVertVelocityTop    => average % avgVertVelocityTop % array
 
+        avgVelocityX    => average % avgVelocityX % array
+        avgTemperature    => average % avgTemperature % array
+        avgTracer1    => average % avgTracer1 % array
+        avgLayerThickness    => average % avgLayerThickness % array
+        avgPlumeVelocityX    => average % avgPlumeVelocityX % array
+        avgNPlumeVelocityX    => average % avgNPlumeVelocityX % array
+
         if(nAverage > 0) then
           avgSSH = avgSSH / nAverage
           varSSH = varSSH / nAverage
@@ -131,6 +175,12 @@ module ocn_time_average
           avgNormalVelocity = avgNormalVelocity / nAverage
           varNormalVelocity = varNormalVelocity / nAverage
           avgVertVelocityTop = avgVertVelocityTop / nAverage
+
+          avgVelocityX    = avgVelocityX / nAverage
+          avgTemperature    = avgTemperature / nAverage
+          avgTracer1    = avgTracer1 / nAverage
+          avgLayerThickness    = avgLayerThickness / nAverage
+          avgPlumeVelocityX    = avgPlumeVelocityX / avgNPlumeVelocityX
 
           nAverage = 0
         end if

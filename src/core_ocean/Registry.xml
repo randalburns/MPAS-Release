@@ -191,7 +191,7 @@
 					description="Determines the minimum fraction of a cell altering the initial conditions can create.  The alteration of layer thickness only occurs when config_do_restart is false, i.e. on an initial run."
 					possible_values="Any real between 0 and 1."
 		/>
-		<nml_option name="config_round_pbcs_up" type="logical" default_value=".false." units="unitless"
+		<nml_option name="config_round_pbcs_up" type="logical" default_value=".true." units="unitless"
 					description="If true, all pbcs are rounded up to top of cell.  If false, half go up, half go down."
 					possible_values=".true. or .false."
 		/>
@@ -677,12 +677,16 @@
 		            description="X-coordinate where embayment begins in DOME test case inflow region."
 		            possible_values="any positive real"
 		/>
-		<nml_option name="config_inflow_delta_T" type="real" default_value="10.0" units="C"
-		            description="temperature difference, surface to inflow"
+		<nml_option name="config_inflow_bottom_T" type="real" default_value="5.0" units="C"
+		            description="temperature at bottom"
 		            possible_values="any positive real"
 		/>
 		<nml_option name="config_inflow_surface_T" type="real" default_value="15.0" units="C"
 		            description="surface temperature for inflow function."
+		            possible_values="any positive real"
+		/>
+		<nml_option name="config_inflow_domain_depth" type="real" default_value="3600.0" units="m"
+		            description="Depth of main domain for DOME test case."
 		            possible_values="any positive real"
 		/>
 		<nml_option name="config_inflow_coriolis" type="real" default_value="1.0e-4" units="s^{-1}"
@@ -701,7 +705,7 @@
 		            description="delta buoyancy for inflow"
 		            possible_values="any positive real"
 		/>
-		<nml_option name="config_normalize_inflow" type="logical" default_value=".false." units="unitless"
+		<nml_option name="config_normalize_inflow" type="logical" default_value=".true." units="unitless"
 		            description="If true, normalize inflow at boundary for the DOME 3D overflow test case."
 		            possible_values=".true. or .false."
 		/>
@@ -845,10 +849,10 @@
 		/>
 	</var_struct>
 	<var_struct name="mesh" time_levs="0">
-		<var name="latCell" type="real" dimensions="nCells" streams="iro" units="radians"
+		<var name="latCell" type="real" dimensions="nCells" streams="ir" units="radians"
 			 description="Latitude location of cell centers in radians."
 		/>
-		<var name="lonCell" type="real" dimensions="nCells" streams="iro" units="radians"
+		<var name="lonCell" type="real" dimensions="nCells" streams="ir" units="radians"
 			 description="Longitude location of cell centers in radians."
 		/>
 		<var name="xCell" type="real" dimensions="nCells" streams="iro" units="unitless"
@@ -857,16 +861,16 @@
 		<var name="yCell" type="real" dimensions="nCells" streams="iro" units="unitless"
 			 description="Y Coordinate in cartesian space of cell centers."
 		/>
-		<var name="zCell" type="real" dimensions="nCells" streams="iro" units="unitless"
+		<var name="zCell" type="real" dimensions="nCells" streams="ir" units="unitless"
 			 description="Z Coordinate in cartesian space of cell centers."
 		/>
 		<var name="indexToCellID" type="integer" dimensions="nCells" streams="iro" units="unitless"
 			 description="List of global cell IDs."
 		/>
-		<var name="latEdge" type="real" dimensions="nEdges" streams="iro" units="radians"
+		<var name="latEdge" type="real" dimensions="nEdges" streams="ir" units="radians"
 			 description="Latitude location of edge midpoints in radians."
 		/>
-		<var name="lonEdge" type="real" dimensions="nEdges" streams="iro" units="radians"
+		<var name="lonEdge" type="real" dimensions="nEdges" streams="ir" units="radians"
 			 description="Longitude location of edge midpoints in radians."
 		/>
 		<var name="xEdge" type="real" dimensions="nEdges" streams="iro" units="unitless"
@@ -875,16 +879,16 @@
 		<var name="yEdge" type="real" dimensions="nEdges" streams="iro" units="unitless"
 			 description="Y Coordinate in cartesian space of edge midpoints."
 		/>
-		<var name="zEdge" type="real" dimensions="nEdges" streams="iro" units="unitless"
+		<var name="zEdge" type="real" dimensions="nEdges" streams="ir" units="unitless"
 			 description="Z Coordinate in cartesian space of edge midpoints."
 		/>
 		<var name="indexToEdgeID" type="integer" dimensions="nEdges" streams="iro" units="unitless"
 			 description="List of global edge IDs."
 		/>
-		<var name="latVertex" type="real" dimensions="nVertices" streams="iro" units="radians"
+		<var name="latVertex" type="real" dimensions="nVertices" streams="ir" units="radians"
 			 description="Latitude location of vertices in radians."
 		/>
-		<var name="lonVertex" type="real" dimensions="nVertices" streams="iro" units="radians"
+		<var name="lonVertex" type="real" dimensions="nVertices" streams="ir" units="radians"
 			 description="Longitude location of vertices in radians."
 		/>
 		<var name="xVertex" type="real" dimensions="nVertices" streams="iro" units="unitless"
@@ -893,13 +897,13 @@
 		<var name="yVertex" type="real" dimensions="nVertices" streams="iro" units="unitless"
 			 description="Y Coordinate in cartesian space of vertices."
 		/>
-		<var name="zVertex" type="real" dimensions="nVertices" streams="iro" units="unitless"
+		<var name="zVertex" type="real" dimensions="nVertices" streams="ir" units="unitless"
 			 description="Z Coordinate in cartesian space of vertices."
 		/>
 		<var name="indexToVertexID" type="integer" dimensions="nVertices" streams="iro" units="unitless"
 			 description="List of global vertex IDs."
 		/>
-		<var name="meshDensity" type="real" dimensions="nCells" streams="iro" units="unitless"
+		<var name="meshDensity" type="real" dimensions="nCells" streams="ir" units="unitless"
 			 description="Value of density function used to generate a particular mesh at cell centers."
 		/>
 		<var name="meshScalingDel2" type="real" dimensions="nEdges" streams="ro" units="unitless"
@@ -1373,6 +1377,24 @@
 		/>
 		<var name="avgVertVelocityTop" type="real" dimensions="nVertLevelsP1 nCells Time" streams="" units="m s^{-1}"
 			 description="time-averaged vertical velocity at top of cell"
+		/>
+		<var name="avgVelocityX" type="real" dimensions="nVertLevels nCells Time" streams="o" units="m s^{-1}"
+			 description="time-averaged velocity in the x direction"
+		/>
+		<var name="avgTemperature" type="real" dimensions="nVertLevels nCells Time" streams="o" units="C"
+			 description="time-averaged"
+		/>
+		<var name="avgTracer1" type="real" dimensions="nVertLevels nCells Time" streams="o" units="unitless"
+			 description="time-averaged"
+		/>
+		<var name="avgLayerThickness" type="real" dimensions="nVertLevels nCells Time" streams="o" units="m"
+			 description="time-averaged"
+		/>
+		<var name="avgPlumeVelocityX" type="real" dimensions="nVertLevels nCells Time" streams="o" units="m"
+			 description="time-averaged"
+		/>
+		<var name="avgNPlumeVelocityX" type="real" dimensions="nVertLevels nCells Time" streams="" units="m"
+			 description="time-averaged"
 		/>
 	</var_struct>
     <var_struct name="forcing" time_levs="0">
