@@ -100,7 +100,7 @@ module ocn_time_integration_split
       type (block_type), pointer :: block
       real (kind=RKIND) :: normalThicknessFluxSum, thicknessSum, flux, sshEdge, hEdge1, &
                  CoriolisTerm, uCorr, temp, temp_h, coef, barotropicThicknessFlux_coeff, sshCell1, sshCell2, &
-                 zInflowTop, uInflow, inflowFluxBlock, inflowFlux, inflow_F, zMidEdge, &
+                 zInflowTop, uInflow, inflowFluxBlock, inflowFlux, inflow_F, zMidEdge, zMidCell, &
                  inflow_U0, inflow_Lp, inflow_max_zstar, inflow_min_zstar, inflow_x_w, inflow_h, inflow_zstar, inflow_y_velocity
       integer :: num_tracers, ucorr_coef, err
       real (kind=RKIND), dimension(:,:), pointer :: &
@@ -867,6 +867,7 @@ module ocn_time_integration_split
                            inflow_y_velocity = - inflow_U0 * exp(-inflow_x_w/inflow_Lp)*(1.0 - inflow_F)
                            block % diagnostics % uTransport % array(k,iEdge) = sin(block % mesh % angleEdge % array(iEdge))*inflow_y_velocity
 
+!print '(a,100f8.2)', 'xEdge, inflow_x_w, inflow_h', block % mesh % xEdge % array(iEdge)/1.0e3, inflow_x_w/1.0e3, inflow_h
 !                           if (inflow_zstar.lt.0.0) print '(a,i4,100f8.2)', 'k, zMidEdge, inflow_zstar, inflow_F, inflow_y_velocity, uTransport',k, zMidEdge, inflow_zstar, inflow_F, inflow_y_velocity, block % diagnostics % uTransport % array(k,iEdge)
                         enddo
 
@@ -908,7 +909,7 @@ module ocn_time_integration_split
 
             call mpas_dmpar_sum_real(dminfo, inflowFluxBlock, inflowFlux)
 
-            print *, 'inflowFlux',inflowFlux
+            !print *, 'inflowFlux',inflowFlux
 
             block => domain % blocklist
             do while (associated(block))
@@ -963,7 +964,7 @@ module ocn_time_integration_split
 
                ! delete this later:
                call mpas_dmpar_sum_real(dminfo, inflowFluxBlock, inflowFlux)
-               print *, 'inflowFlux after normalize',inflowFlux
+               !print *, 'inflowFlux after normalize',inflowFlux
 
                block => block % next
             end do  ! block
@@ -1185,18 +1186,44 @@ module ocn_time_integration_split
               do iCell=1,block % mesh % nCells
                 if (block % mesh % yCell % array(iCell) .gt. config_inflow_min_y ) then
 
-                  do k=1,block % mesh % maxLevelCell % array(iCell)
+                        inflow_x_w = block % mesh % xCell % array(iCell) - config_inflow_x0
+                        inflow_h = config_inflow_height * exp(-inflow_x_w/inflow_Lp)
 
-                     ! this is h_{n+1}
-                     ! the following line works for z-level and z-star, but not sigma
-                     !block % state % time_levs(2) % state % layerThickness % array(k,iCell) = block % verticalMesh % refLayerThickness % array(k)
-                     block % state % time_levs(2) % state % layerThickness % array(k,iCell) = &
-                        config_inflow_embayment_depth / block % mesh % maxLevelCell % array(iCell)
+!print '(a,100f8.2)', 'xEdge, inflow_x_w, inflow_h', block % mesh % xEdge % array(iEdge)/1.0e3, inflow_x_w/1.0e3, inflow_h
+!                           if (inflow_zstar.lt.0.0) print '(a,i4,100f8.2)', 'k, zMidEdge, inflow_zstar, inflow_F, inflow_y_velocity, uTransport',k, zMidEdge, inflow_zstar, inflow_F, inflow_y_velocity, block % diagnostics % uTransport % array(k,iEdge)
 
-                     ! This is Phi at n+1
-                     block % state % time_levs(2) % state % tracers % array(indexT,k,iCell) = config_inflow_temperature
-                     block % state % time_levs(2) % state % tracers % array(indexS,k,iCell) = config_inflow_salinity
-                     block % state % time_levs(2) % state % tracers % array(index1,k,iCell) = config_inflow_tracer1
+                   do k=1,block % mesh % maxLevelCell % array(iCell)
+
+                      ! The following works for any equally spaced grid, including z and sigma.
+                      zMidCell = - config_inflow_embayment_depth * (k-0.5) / block % mesh % maxLevelCell % array(iCell)
+                      inflow_zstar = (zMidCell + config_inflow_embayment_depth - inflow_h )/inflow_h
+
+                      if (inflow_zstar.ge.inflow_max_zstar) then
+                         inflow_F = 1.0
+                      elseif (inflow_zstar.le.inflow_min_zstar) then
+                         inflow_F = 0.0
+                      else
+                         inflow_F = 1/config_inflow_Rim*inflow_zstar/(inflow_zstar+1) + 0.5
+                      endif
+
+
+                      ! this is h_{n+1}
+                      ! the following line works for z-level and z-star, but not sigma
+                      !block % state % time_levs(2) % state % layerThickness % array(k,iCell) = block % verticalMesh % refLayerThickness % array(k)
+                      block % state % time_levs(2) % state % layerThickness % array(k,iCell) = &
+                           block % mesh % bottomDepth % array(iCell) / block % mesh % maxLevelCell % array(iCell)
+
+
+
+                      ! This is Phi at n+1
+                      !                     block % state % time_levs(2) % state % tracers % array(indexT,k,iCell) = config_inflow_temperature
+
+                      block % state % time_levs(2) % state % tracers % array(indexT,k,iCell) = &
+                           min(config_inflow_surface_T - (config_inflow_surface_T - config_inflow_bottom_T)*(1.0 - inflow_F), &
+                           config_inflow_surface_T + zMidCell/(-config_inflow_domain_depth)*(config_inflow_bottom_T - config_inflow_surface_T) )
+
+                      block % state % time_levs(2) % state % tracers % array(indexS,k,iCell) = config_inflow_salinity
+                      block % state % time_levs(2) % state % tracers % array(index1,k,iCell) = config_inflow_tracer1
 
                   end do
                 endif
