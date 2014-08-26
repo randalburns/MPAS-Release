@@ -710,7 +710,19 @@
 		            possible_values=".true. or .false."
 		/>
 		<nml_option name="config_inflow_flux" type="real" default_value="8.64e+06" units="m^3s^{-1}"
-		            description="inflow vlue for normalization"
+		            description="inflow value for normalization"
+		            possible_values="any positive real"
+		/>
+		<nml_option name="config_outflow_on" type="logical" default_value=".true." units="unitless"
+		            description="If true, turn on outflow at western edge."
+		            possible_values=".true. or .false."
+		/>
+		<nml_option name="config_outflow_max_x" type="real" default_value="20.0e3" units="m"
+		            description="x-location of outflow"
+		            possible_values="any positive real"
+		/>
+		<nml_option name="config_outflow_area" type="real" default_value="1.62e9" units="m^2"
+		            description="horizonal area of outflow"
 		            possible_values="any positive real"
 		/>
 	</nml_record>
@@ -819,7 +831,7 @@
 		<var name="normalVelocity" type="real" dimensions="nVertLevels nEdges Time" streams="ir" units="m s^{-1}"
 			 description="horizonal velocity, normal component to an edge"
 		/>
-		<var name="layerThickness" type="real" dimensions="nVertLevels nCells Time" streams="iro" units="m"
+		<var name="layerThickness" type="real" dimensions="nVertLevels nCells Time" streams="ir" units="m"
 			 description="layer thickness"
 		/>
 		<var name="ssh" type="real" dimensions="nCells Time" streams="o" units="m"

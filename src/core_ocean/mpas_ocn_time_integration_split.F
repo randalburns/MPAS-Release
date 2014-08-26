@@ -101,7 +101,7 @@ module ocn_time_integration_split
       real (kind=RKIND) :: normalThicknessFluxSum, thicknessSum, flux, sshEdge, hEdge1, &
                  CoriolisTerm, uCorr, temp, temp_h, coef, barotropicThicknessFlux_coeff, sshCell1, sshCell2, &
                  zInflowTop, uInflow, inflowFluxBlock, inflowFlux, inflow_F, zMidEdge, zMidCell, &
-                 inflow_U0, inflow_Lp, inflow_max_zstar, inflow_min_zstar, inflow_x_w, inflow_h, inflow_zstar, inflow_y_velocity
+                 inflow_U0, inflow_Lp, inflow_max_zstar, inflow_min_zstar, inflow_x_w, inflow_h, inflow_zstar, inflow_y_velocity, outflow_x_velocity
       integer :: num_tracers, ucorr_coef, err
       real (kind=RKIND), dimension(:,:), pointer :: &
                  u, h, layerThicknessEdge, vertViscTopOfEdge, vertDiffTopOfCell
@@ -824,13 +824,15 @@ module ocn_time_integration_split
                   inflow_Lp = sqrt(config_inflow_delta_b*config_inflow_height)/config_inflow_coriolis
                   inflow_max_zstar = config_inflow_Rim / (2-config_inflow_Rim)
                   inflow_min_zstar = -config_inflow_Rim / (2+config_inflow_Rim)
-!print *, 'inflow_Lp',inflow_Lp
+                  outflow_x_velocity = - config_inflow_flux/config_outflow_area
+
+                  !print *, 'inflow_Lp',inflow_Lp
                   do iEdge=1,block % mesh % nEdges
                      if (block % mesh % yEdge % array(iEdge) .gt. config_inflow_min_y ) then
 
                         inflow_x_w = block % mesh % xEdge % array(iEdge) - config_inflow_x0
                         inflow_h = config_inflow_height * exp(-inflow_x_w/inflow_Lp)
-!print '(a,100f8.2)', 'xEdge, inflow_x_w, inflow_h', block % mesh % xEdge % array(iEdge)/1.0e3, inflow_x_w/1.0e3, inflow_h
+                        !print '(a,100f8.2)', 'xEdge, inflow_x_w, inflow_h', block % mesh % xEdge % array(iEdge)/1.0e3, inflow_x_w/1.0e3, inflow_h
                         ! Compute the inflow as n dot u_inflow where n is normal to the edge.
                         ! angleEdge varies from 0 (pointing east) to 2pi.
                         !uInflow =   cos(block % mesh % angleEdge % array(iEdge))*config_inflow_x_velocity &
@@ -867,8 +869,8 @@ module ocn_time_integration_split
                            inflow_y_velocity = - inflow_U0 * exp(-inflow_x_w/inflow_Lp)*(1.0 - inflow_F)
                            block % diagnostics % uTransport % array(k,iEdge) = sin(block % mesh % angleEdge % array(iEdge))*inflow_y_velocity
 
-!print '(a,100f8.2)', 'xEdge, inflow_x_w, inflow_h', block % mesh % xEdge % array(iEdge)/1.0e3, inflow_x_w/1.0e3, inflow_h
-!                           if (inflow_zstar.lt.0.0) print '(a,i4,100f8.2)', 'k, zMidEdge, inflow_zstar, inflow_F, inflow_y_velocity, uTransport',k, zMidEdge, inflow_zstar, inflow_F, inflow_y_velocity, block % diagnostics % uTransport % array(k,iEdge)
+                           !print '(a,100f8.2)', 'xEdge, inflow_x_w, inflow_h', block % mesh % xEdge % array(iEdge)/1.0e3, inflow_x_w/1.0e3, inflow_h
+                           !                           if (inflow_zstar.lt.0.0) print '(a,i4,100f8.2)', 'k, zMidEdge, inflow_zstar, inflow_F, inflow_y_velocity, uTransport',k, zMidEdge, inflow_zstar, inflow_F, inflow_y_velocity, block % diagnostics % uTransport % array(k,iEdge)
                         enddo
 
                         ! Compute btr/bcl splitting
@@ -894,14 +896,47 @@ module ocn_time_integration_split
                         ! check if this edge is in the first row on the boundary
                         if (block % mesh % yEdge % array(iEdge) .lt. config_inflow_min_y + block % mesh % dvEdge % array(1) ) then
                            do k=1,block % mesh % maxLevelEdgeTop % array(iEdge)
-                           ! inflow flux = dz * dx * u
-                           inflowFluxBlock = inflowFluxBlock + block % diagnostics % layerThicknessEdge % array(k,iEdge) &
-                                * block % mesh % dvEdge % array(iEdge) &
-                                * abs(block % diagnostics % uTransport % array(k,iEdge))
-                        enddo
+                              ! inflow flux = dz * dx * u
+                              inflowFluxBlock = inflowFluxBlock + block % diagnostics % layerThicknessEdge % array(k,iEdge) &
+                                   * block % mesh % dvEdge % array(iEdge) &
+                                   * abs(block % diagnostics % uTransport % array(k,iEdge))
+                           enddo
+                        endif
                      endif
+
+                  end do ! iEdge
+
+                  if (config_outflow_on) then
+                     do iEdge=1,block % mesh % nEdges
+                        ! DOME outflow, west side of domain:
+                        if (block % mesh % xEdge % array(iEdge) .le. config_outflow_max_x ) then
+
+                           block % diagnostics % uTransport % array(:,iEdge) = block % mesh % edgeMask % array(:,iEdge) &
+                                * cos(block % mesh % angleEdge % array(iEdge))*outflow_x_velocity
+
+                           ! Compute btr/bcl splitting
+                           normalThicknessFluxSum = block % diagnostics % layerThicknessEdge % array(1,iEdge) &
+                                *block % diagnostics % uTransport % array(1,iEdge)
+                           thicknessSum  = block % diagnostics % layerThicknessEdge % array(1,iEdge)
+
+                           do k=2,block % mesh % maxLevelEdgeTop % array(iEdge)
+                              normalThicknessFluxSum = normalThicknessFluxSum + block % diagnostics % layerThicknessEdge % array(k,iEdge) &
+                                   *block % diagnostics % uTransport % array(k,iEdge)
+                              thicknessSum  =  thicknessSum + block % diagnostics % layerThicknessEdge % array(k,iEdge)
+                           enddo
+
+                           block % state % time_levs(2) % state % normalBarotropicVelocity % array(iEdge) = normalThicknessFluxSum/thicknessSum
+
+                           do k=1,block % mesh % maxLevelEdgeTop % array(iEdge)
+                              block % state % time_levs(2) % state % normalBaroclinicVelocity % array(k,iEdge) &
+                                   = block % diagnostics % uTransport % array(k,iEdge) &
+                                   - block % state % time_levs(2) % state % normalBarotropicVelocity % array(iEdge) 
+                           enddo
+
+                        endif
+
+                     end do ! iEdge
                   endif
-                 end do ! iEdge
                endif
 
                block => block % next
@@ -949,21 +984,21 @@ module ocn_time_integration_split
                            ! delete this later:
                            ! compute total inflow flux:
                            ! check if this edge is in the first row on the boundary
-                           if (block % mesh % yEdge % array(iEdge) .lt. config_inflow_min_y + block % mesh % dvEdge % array(1) ) then
-                              do k=1,block % mesh % maxLevelEdgeTop % array(iEdge)
-                                 ! inflow flux = dz * dx * u
-                                 inflowFluxBlock = inflowFluxBlock + block % diagnostics % layerThicknessEdge % array(k,iEdge) &
-                                      * block % mesh % dvEdge % array(iEdge) &
-                                      * abs(block % diagnostics % uTransport % array(k,iEdge))
-                              enddo
-                           endif
+                           !if (block % mesh % yEdge % array(iEdge) .lt. config_inflow_min_y + block % mesh % dvEdge % array(1) ) then
+                           !   do k=1,block % mesh % maxLevelEdgeTop % array(iEdge)
+                           !      ! inflow flux = dz * dx * u
+                           !      inflowFluxBlock = inflowFluxBlock + block % diagnostics % layerThicknessEdge % array(k,iEdge) &
+                           !           * block % mesh % dvEdge % array(iEdge) &
+                           !           * abs(block % diagnostics % uTransport % array(k,iEdge))
+                           !   enddo
+                           !endif
                         endif
                      end do ! iEdge
                   endif
                endif
 
                ! delete this later:
-               call mpas_dmpar_sum_real(dminfo, inflowFluxBlock, inflowFlux)
+               !call mpas_dmpar_sum_real(dminfo, inflowFluxBlock, inflowFlux)
                !print *, 'inflowFlux after normalize',inflowFlux
 
                block => block % next
@@ -1178,59 +1213,68 @@ module ocn_time_integration_split
             !  mrp for DOME 3D overflow problem only
             !
             !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
+            
             if (config_use_dome_inflow) then
-              indexT = block % state % time_levs(2) % state % index_temperature
-              indexS = block % state % time_levs(2) % state % index_salinity
-              index1 = block % state % time_levs(2) % state % index_tracer1
-              do iCell=1,block % mesh % nCells
-                if (block % mesh % yCell % array(iCell) .gt. config_inflow_min_y ) then
+               indexT = block % state % time_levs(2) % state % index_temperature
+               indexS = block % state % time_levs(2) % state % index_salinity
+               index1 = block % state % time_levs(2) % state % index_tracer1
+               do iCell=1,block % mesh % nCells
+                  if (block % mesh % yCell % array(iCell) .gt. config_inflow_min_y ) then
 
-                        inflow_x_w = block % mesh % xCell % array(iCell) - config_inflow_x0
-                        inflow_h = config_inflow_height * exp(-inflow_x_w/inflow_Lp)
+                     inflow_x_w = block % mesh % xCell % array(iCell) - config_inflow_x0
+                     inflow_h = config_inflow_height * exp(-inflow_x_w/inflow_Lp)
 
-!print '(a,100f8.2)', 'xEdge, inflow_x_w, inflow_h', block % mesh % xEdge % array(iEdge)/1.0e3, inflow_x_w/1.0e3, inflow_h
-!                           if (inflow_zstar.lt.0.0) print '(a,i4,100f8.2)', 'k, zMidEdge, inflow_zstar, inflow_F, inflow_y_velocity, uTransport',k, zMidEdge, inflow_zstar, inflow_F, inflow_y_velocity, block % diagnostics % uTransport % array(k,iEdge)
+                     !print '(a,100f8.2)', 'xEdge, inflow_x_w, inflow_h', block % mesh % xEdge % array(iEdge)/1.0e3, inflow_x_w/1.0e3, inflow_h
+                     !                           if (inflow_zstar.lt.0.0) print '(a,i4,100f8.2)', 'k, zMidEdge, inflow_zstar, inflow_F, inflow_y_velocity, uTransport',k, zMidEdge, inflow_zstar, inflow_F, inflow_y_velocity, block % diagnostics % uTransport % array(k,iEdge)
 
-                   do k=1,block % mesh % maxLevelCell % array(iCell)
+                     do k=1,block % mesh % maxLevelCell % array(iCell)
 
-                      ! The following works for any equally spaced grid, including z and sigma.
-                      zMidCell = - config_inflow_embayment_depth * (k-0.5) / block % mesh % maxLevelCell % array(iCell)
-                      inflow_zstar = (zMidCell + config_inflow_embayment_depth - inflow_h )/inflow_h
+                        ! The following works for any equally spaced grid, including z and sigma.
+                        zMidCell = - config_inflow_embayment_depth * (k-0.5) / block % mesh % maxLevelCell % array(iCell)
+                        inflow_zstar = (zMidCell + config_inflow_embayment_depth - inflow_h )/inflow_h
 
-                      if (inflow_zstar.ge.inflow_max_zstar) then
-                         inflow_F = 1.0
-                      elseif (inflow_zstar.le.inflow_min_zstar) then
-                         inflow_F = 0.0
-                      else
-                         inflow_F = 1/config_inflow_Rim*inflow_zstar/(inflow_zstar+1) + 0.5
-                      endif
-
-
-                      ! this is h_{n+1}
-                      ! the following line works for z-level and z-star, but not sigma
-                      !block % state % time_levs(2) % state % layerThickness % array(k,iCell) = block % verticalMesh % refLayerThickness % array(k)
-                      block % state % time_levs(2) % state % layerThickness % array(k,iCell) = &
-                           block % mesh % bottomDepth % array(iCell) / block % mesh % maxLevelCell % array(iCell)
+                        if (inflow_zstar.ge.inflow_max_zstar) then
+                           inflow_F = 1.0
+                        elseif (inflow_zstar.le.inflow_min_zstar) then
+                           inflow_F = 0.0
+                        else
+                           inflow_F = 1/config_inflow_Rim*inflow_zstar/(inflow_zstar+1) + 0.5
+                        endif
 
 
+                        ! this is h_{n+1}
+                        ! the following line works for z-level and z-star, but not sigma
+                        !block % state % time_levs(2) % state % layerThickness % array(k,iCell) = block % verticalMesh % refLayerThickness % array(k)
+                        block % state % time_levs(2) % state % layerThickness % array(k,iCell) = block % verticalMesh % restingThickness % array(k,iCell)
 
-                      ! This is Phi at n+1
-                      !                     block % state % time_levs(2) % state % tracers % array(indexT,k,iCell) = config_inflow_temperature
+                        ! This is Phi at n+1
+                        !                     block % state % time_levs(2) % state % tracers % array(indexT,k,iCell) = config_inflow_temperature
 
-                      block % state % time_levs(2) % state % tracers % array(indexT,k,iCell) = &
-                           min(config_inflow_surface_T - (config_inflow_surface_T - config_inflow_bottom_T)*(1.0 - inflow_F), &
-                           config_inflow_surface_T + zMidCell/(-config_inflow_domain_depth)*(config_inflow_bottom_T - config_inflow_surface_T) )
+                        block % state % time_levs(2) % state % tracers % array(indexT,k,iCell) = &
+                             min(config_inflow_surface_T - (config_inflow_surface_T - config_inflow_bottom_T)*(1.0 - inflow_F), &
+                             config_inflow_surface_T + zMidCell/(-config_inflow_domain_depth)*(config_inflow_bottom_T - config_inflow_surface_T) )
 
-                      block % state % time_levs(2) % state % tracers % array(indexS,k,iCell) = config_inflow_salinity
-                      block % state % time_levs(2) % state % tracers % array(index1,k,iCell) = config_inflow_tracer1
+                        block % state % time_levs(2) % state % tracers % array(indexS,k,iCell) = config_inflow_salinity
+                        block % state % time_levs(2) % state % tracers % array(index1,k,iCell) = config_inflow_tracer1
 
-                  end do
-                endif
-              end do
-            endif
-            !  mrp for DOME 3D overflow problem only end
+                     end do
+                  endif
 
+
+               end do ! iCell
+
+               if (config_outflow_on) then
+
+                  do iCell=1,block % mesh % nCells
+                     ! DOME outflow, west side of domain:
+                     if (block % mesh % xCell % array(iCell) .le. config_outflow_max_x ) then
+                        block % state % time_levs(2) % state % layerThickness % array(:,iCell) = block % verticalMesh % restingThickness % array(:,iCell)
+                     endif
+                  end do ! iCell
+
+               endif ! config_outflow_on
+            endif ! config_use_dome_inflow
+            !  mrp for DOME 3D overflow problem only end 
 
             block => block % next
          end do
