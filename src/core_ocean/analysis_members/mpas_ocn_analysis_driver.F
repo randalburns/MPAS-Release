@@ -129,15 +129,15 @@ contains
          err = ior(err, err_tmp)
       endif
 
-      call mpas_pool_get_config(configPool, 'config_use_paraview_catalyst', config_use_paraview_catalyst)
-      if (config_use_paraview_catalyst) then
-         call ocn_setup_packages_paraview_catalyst(configPool, packagePool, err_tmp)
-         err = ior(err, err_tmp)
-      endif
-
       call mpas_pool_get_config(configPool, 'config_use_okubo_weiss', config_use_okubo_weiss)
       if (config_use_okubo_weiss) then
          call ocn_setup_packages_okubo_weiss(configPool, packagePool, err_tmp)
+         err = ior(err, err_tmp)
+      endif
+
+      call mpas_pool_get_config(configPool, 'config_use_paraview_catalyst', config_use_paraview_catalyst)
+      if (config_use_paraview_catalyst) then
+         call ocn_setup_packages_paraview_catalyst(configPool, packagePool, err_tmp)
          err = ior(err, err_tmp)
       endif
 
@@ -211,17 +211,18 @@ contains
          err = ior(err, err_tmp)
       endif
 
+      call mpas_pool_get_config(domain % configs, 'config_use_okubo_weiss', config_use_okubo_weiss)
+      if (config_use_okubo_weiss) then
+         call ocn_init_okubo_weiss(domain, err_tmp)
+         err = ior(err, err_tmp)
+      endif
+
       call mpas_pool_get_config(domain % configs, 'config_use_paraview_catalyst', config_use_paraview_catalyst)
       if (config_use_paraview_catalyst) then
          call ocn_init_paraview_catalyst(domain, err_tmp)
          err = ior(err, err_tmp)
       endif
 
-      call mpas_pool_get_config(domain % configs, 'config_use_okubo_weiss', config_use_okubo_weiss)
-      if (config_use_okubo_weiss) then
-         call ocn_init_okubo_weiss(domain, err_tmp)
-         err = ior(err, err_tmp)
-      endif
 
 !      call mpas_pool_get_config(domain % configs, 'config_use_TEMPLATE', config_use_TEMPLATE)
 !      if (config_use_TEMPLATE) then
@@ -302,18 +303,18 @@ contains
          err = ior(err, err_tmp)
       endif
 
-      call mpas_pool_get_config(domain % configs, 'config_use_paraview_catalyst', config_use_paraview_catalyst)
-      call mpas_pool_get_config(domain % configs, 'config_paraview_catalyst_compute_startup', config_paraview_catalyst_compute_startup)
-      if (config_use_paraview_catalyst.and.config_paraview_catalyst_compute_startup) then
-         call ocn_compute_paraview_catalyst(domain, timeLevel, err_tmp)
-         err = ior(err, err_tmp)
-      endif
-
       call mpas_pool_get_config(domain % configs, 'config_use_okubo_weiss', config_use_okubo_weiss)
       call mpas_pool_get_config(domain % configs, 'config_okubo_weiss_compute_startup', config_okubo_weiss_compute_startup)
       if (config_use_okubo_weiss.and.config_okubo_weiss_compute_startup) then
          call ocn_compute_okubo_weiss(domain, timeLevel, err_tmp)
          call mpas_stream_mgr_write(stream_manager, streamID='okuboWeissOutput', forceWriteNow=.true., ierr=err_tmp)
+         err = ior(err, err_tmp)
+      endif
+
+      call mpas_pool_get_config(domain % configs, 'config_use_paraview_catalyst', config_use_paraview_catalyst)
+      call mpas_pool_get_config(domain % configs, 'config_paraview_catalyst_compute_startup', config_paraview_catalyst_compute_startup)
+      if (config_use_paraview_catalyst.and.config_paraview_catalyst_compute_startup) then
+         call ocn_compute_paraview_catalyst(domain, timeLevel, err_tmp)
          err = ior(err, err_tmp)
       endif
 
@@ -388,14 +389,14 @@ contains
          call ocn_compute_zonal_mean(domain, timeLevel, err_tmp)
       endif
 
-      call mpas_pool_get_config(domain % configs, 'config_use_paraview_catalyst', config_use_paraview_catalyst)
-      if (config_use_paraview_catalyst) then
-         call ocn_compute_paraview_catalyst(domain, timeLevel, err_tmp)
-      endif
-
       call mpas_pool_get_config(domain % configs, 'config_use_okubo_weiss', config_use_okubo_weiss)
       if (config_use_okubo_weiss) then
          call ocn_compute_okubo_weiss(domain, timeLevel, err_tmp)
+      endif
+
+      call mpas_pool_get_config(domain % configs, 'config_use_paraview_catalyst', config_use_paraview_catalyst)
+      if (config_use_paraview_catalyst) then
+         call ocn_compute_paraview_catalyst(domain, timeLevel, err_tmp)
       endif
 
 !      call mpas_pool_get_config(domain % configs, 'config_use_TEMPLATE', config_use_TEMPLATE)
@@ -471,13 +472,6 @@ contains
          endif
       endif
 
-      call mpas_pool_get_config(domain % configs, 'config_use_paraview_catalyst', config_use_paraview_catalyst)
-      if (config_use_paraview_catalyst) then
-        if (mpas_stream_mgr_ringing_alarms(stream_manager, streamID='paraview_catalystOutput', direction=MPAS_STREAM_OUTPUT, ierr=err_tmp)) then
-            call ocn_compute_paraview_catalyst(domain, timeLevel, err_tmp)
-         endif
-      endif
-
       call mpas_pool_get_config(domain % configs, 'config_use_okubo_weiss', config_use_okubo_weiss)
       if (config_use_okubo_weiss) then
          if (mpas_stream_mgr_ringing_alarms(stream_manager, streamID='okuboWeissOutput', direction=MPAS_STREAM_OUTPUT, ierr=err_tmp)) then
@@ -491,6 +485,14 @@ contains
 !            call ocn_compute_TEMPLATE(domain, timeLevel, err_tmp)
 !         endif
 !      endif
+
+      call mpas_pool_get_config(domain % configs, 'config_use_paraview_catalyst', config_use_paraview_catalyst)
+      if (config_use_paraview_catalyst) then
+        if (mpas_stream_mgr_ringing_alarms(stream_manager, streamID='paraview_catalystOutput', direction=MPAS_STREAM_OUTPUT, ierr=err_tmp)) then
+            call ocn_compute_paraview_catalyst(domain, timeLevel, err_tmp)
+         endif
+      endif
+
 
    end subroutine ocn_analysis_compute_w_alarms!}}}
 
@@ -556,15 +558,15 @@ contains
          err = ior(err, err_tmp)
       endif
 
-      call mpas_pool_get_config(domain % configs, 'config_use_paraview_catalyst', config_use_paraview_catalyst)
-      if (config_use_paraview_catalyst) then
-         call ocn_restart_paraview_catalyst(domain, err_tmp)
-         err = ior(err, err_tmp)
-      endif
-
       call mpas_pool_get_config(domain % configs, 'config_use_okubo_weiss', config_use_okubo_weiss)
       if (config_use_okubo_weiss) then
          call ocn_restart_okubo_weiss(domain, err_tmp)
+         err = ior(err, err_tmp)
+      endif
+
+      call mpas_pool_get_config(domain % configs, 'config_use_paraview_catalyst', config_use_paraview_catalyst)
+      if (config_use_paraview_catalyst) then
+         call ocn_restart_paraview_catalyst(domain, err_tmp)
          err = ior(err, err_tmp)
       endif
 
@@ -728,15 +730,15 @@ contains
          err = ior(err, err_tmp)
       endif
 
-      call mpas_pool_get_config(domain % configs, 'config_use_paraview_catalyst', config_use_paraview_catalyst)
-      if (config_use_paraview_catalyst) then
-         call ocn_finalize_paraview_catalyst(domain, err_tmp)
-         err = ior(err, err_tmp)
-      endif
-
       call mpas_pool_get_config(domain % configs, 'config_use_okubo_weiss', config_use_okubo_weiss)
       if (config_use_okubo_weiss) then
          call ocn_finalize_okubo_weiss(domain, err_tmp)
+         err = ior(err, err_tmp)
+      endif
+
+      call mpas_pool_get_config(domain % configs, 'config_use_paraview_catalyst', config_use_paraview_catalyst)
+      if (config_use_paraview_catalyst) then
+         call ocn_finalize_paraview_catalyst(domain, err_tmp)
          err = ior(err, err_tmp)
       endif
 
