@@ -458,10 +458,12 @@ contains
 
       type (block_type), pointer :: block
       type (field2DReal), pointer :: kineticEnergyCellField, relativeVorticityCellField
+      type (field2DReal), pointer :: okuboWeissField
       type (field3DReal), pointer :: tracersField
 
       type (mpas_pool_type), pointer :: statePool
       type (mpas_pool_type), pointer :: diagnosticsPool
+      type (mpas_pool_type), pointer :: amOkuboWeissPool
 
       timeLevel=1  ! mrp change to input argument later
 
@@ -470,6 +472,7 @@ contains
 
          call mpas_pool_get_subpool(block % structs, 'state', statePool)
          call mpas_pool_get_subpool(block % structs, 'diagnostics', diagnosticsPool)
+         call mpas_pool_get_subpool(block % structs, 'amOkuboWeiss', amOkuboWeissPool)
 
          call mpas_pool_get_dimension(statePool, 'num_tracers', num_tracers)
          call mpas_pool_get_field(statePool, 'tracers', tracersField, timeLevel)
@@ -505,6 +508,13 @@ contains
                        relativeVorticityCellField % dimSizes(1), \
                        relativeVorticityCellField % dimSizes(2)-1, & 
                        relativeVorticityCellField % array)
+
+         call mpas_pool_get_field(amOkuboWeissPool, 'okuboWeiss', okuboWeissField)
+         call coprocessor_register_data( \
+                       okuboWeissField % fieldName, \
+                       okuboWeissField % dimSizes(1), \
+                       okuboWeissField % dimSizes(2)-1, & 
+                       okuboWeissField % array)
 
        block => block % next
     end do
@@ -546,9 +556,11 @@ contains
       integer :: timeLevel
       type (field2DReal), pointer :: kineticEnergyCellField, relativeVorticityCellField
       type (field3DReal), pointer :: tracersField
+      type (field2DReal), pointer :: okuboWeissField
 
       type (mpas_pool_type), pointer :: statePool
       type (mpas_pool_type), pointer :: diagnosticsPool
+      type (mpas_pool_type), pointer :: amOkuboWeissPool
 
       timeLevel=1  ! Could change to input argument later
 
@@ -557,6 +569,7 @@ contains
 
          call mpas_pool_get_subpool(block % structs, 'state', statePool)
          call mpas_pool_get_subpool(block % structs, 'diagnostics', diagnosticsPool)
+         call mpas_pool_get_subpool(block % structs, 'amOkuboWeiss', amOkuboWeissPool)
 
          call mpas_pool_get_dimension(statePool, 'num_tracers', num_tracers)
          call mpas_pool_get_field(statePool, 'tracers', tracersField, timeLevel)
@@ -596,6 +609,14 @@ contains
                        relativeVorticityCellField % dimSizes(1), \
                        relativeVorticityCellField % dimSizes(2)-1, & 
                        relativeVorticityCellField % array)
+
+         call mpas_pool_get_field(amOkuboWeissPool, 'okuboWeiss', okuboWeissField)
+         call coprocessor_add_data( \
+                       itime, \
+                       okuboWeissField % fieldName, \
+                       okuboWeissField % dimSizes(1), \
+                       okuboWeissField % dimSizes(2)-1, & 
+                       okuboWeissField % array)
 
          block => block % next
       end do
