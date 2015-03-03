@@ -465,6 +465,8 @@ contains
       type (mpas_pool_type), pointer :: diagnosticsPool
       type (mpas_pool_type), pointer :: amOkuboWeissPool
 
+      logical, pointer :: config_use_okubo_weiss
+
       timeLevel=1  ! mrp change to input argument later
 
       block => domain % blocklist
@@ -509,12 +511,15 @@ contains
                        relativeVorticityCellField % dimSizes(2)-1, & 
                        relativeVorticityCellField % array)
 
-         call mpas_pool_get_field(amOkuboWeissPool, 'okuboWeiss', okuboWeissField)
-         call coprocessor_register_data( \
+         call mpas_pool_get_config(domain % configs, 'config_use_okubo_weiss', config_use_okubo_weiss)
+         if (config_use_okubo_weiss) then
+            call mpas_pool_get_field(amOkuboWeissPool, 'okuboWeiss', okuboWeissField)
+            call coprocessor_register_data( \
                        okuboWeissField % fieldName, \
                        okuboWeissField % dimSizes(1), \
                        okuboWeissField % dimSizes(2)-1, & 
                        okuboWeissField % array)
+         endif
 
        block => block % next
     end do
