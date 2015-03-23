@@ -1527,7 +1527,7 @@ contains
       real (kind=RKIND), dimension(:,:), pointer :: om, OW 
       integer, dimension(:,:), pointer :: OW_cc_id
 
-      type(field2DReal), pointer :: SField, Lam1Field, Lam2Field, Lam2_R3Field
+      type(field2DReal), pointer :: SField, Lam1Field, Lam2Field, Lam2_R3Field, OWField
       type(field4DReal), pointer :: velocityGradientField
       type(field2DInteger), pointer :: OW_threshField
 
@@ -1620,6 +1620,9 @@ contains
 
          block => block % next
       end do
+
+      call mpas_pool_get_field(amOkuboWeissPool, 'okuboWeiss', OWField)
+      call mpas_dmpar_exch_halo_field(OWField)
 
       call mpas_timer_stop("compute_okubo_weiss", amOkuboWeissTimer)
 
