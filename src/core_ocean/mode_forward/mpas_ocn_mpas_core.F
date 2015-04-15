@@ -120,6 +120,8 @@ module mpas_core
       character (len=StrKIND), pointer :: config_vert_coord_movement, config_pressure_gradient_type
       real (kind=RKIND), pointer :: config_maxMeshDensity
 
+      type (field2DReal), pointer :: relativeVorticityCellField
+
       err = 0
 
       !
@@ -288,6 +290,10 @@ module mpas_core
          xtime = startTimeStamp 
          block => block % next
       end do
+
+     ! mrp temp: halo exchange on relative vorticity, for PV vtk output.
+      call mpas_pool_get_field(diagnosticsPool, 'relativeVorticityCell', relativeVorticityCellField)
+      call mpas_dmpar_exch_halo_field(relativeVorticityCellField)
 
       if (config_conduct_tests) then
          call mpas_timer_start("test suite", .false., testSuiteTimer)
