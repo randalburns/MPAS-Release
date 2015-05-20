@@ -124,6 +124,7 @@ module ocn_time_integration_split
       integer, pointer :: config_n_ts_iter, config_btr_subcycle_loop_factor, config_n_btr_subcycles
       integer, pointer :: config_n_btr_cor_iter
       logical, pointer :: config_use_standardGM
+      logical, pointer :: config_frazil_ice_formation, config_monotonic
 
       logical, pointer :: config_use_freq_filtered_thickness, config_btr_solve_SSH2, config_filter_btr_mode
       logical, pointer :: config_vel_correction, config_prescribe_velocity, config_prescribe_thickness
@@ -1413,11 +1414,17 @@ module ocn_time_integration_split
         call mpas_pool_get_array(statePool, 'layerThickness', layerThicknessNew, 2)
         call mpas_pool_get_array(statePool, 'tracers', tracersNew, 2)
 
-        call mpas_pool_get_array(forcingPool, 'seaIceEnergy', seaIceEnergy)
+        call mpas_pool_get_config(ocnConfigs, 'config_frazil_ice_formation', config_frazil_ice_formation)
 
         call ocn_diagnostic_solve(dt, statePool, forcingPool, meshPool, diagnosticsPool, scratchPool, 2)
-        call ocn_sea_ice_formation(meshPool, indexTemperature, indexSalinity, layerThicknessNew, &
+
+        if(config_frazil_ice_formation) then
+           call mpas_pool_get_array(forcingPool, 'seaIceEnergy', seaIceEnergy)
+           call ocn_sea_ice_formation(meshPool, indexTemperature, indexSalinity, layerThicknessNew, &
                                    tracersNew, seaIceEnergy, err)
+        end if
+
+
         block => block % next
       end do
 

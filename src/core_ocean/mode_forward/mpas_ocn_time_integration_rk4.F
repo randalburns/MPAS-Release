@@ -118,6 +118,7 @@ module ocn_time_integration_rk4
       logical, pointer :: config_filter_btr_mode, config_use_freq_filtered_thickness
       logical, pointer :: config_use_standardGM
       logical, pointer :: config_use_cvmix_kpp
+      logical, pointer :: config_frazil_ice_formation, config_monotonic
       real (kind=RKIND), pointer :: config_mom_del4
 
       ! State indices
@@ -622,7 +623,7 @@ module ocn_time_integration_rk4
 
         call mpas_pool_get_array(meshPool, 'maxLevelCell', maxLevelCell)
 
-        call mpas_pool_get_array(forcingPool, 'seaIceEnergy', seaIceEnergy)
+        call mpas_pool_get_config(ocnConfigs, 'config_frazil_ice_formation', config_frazil_ice_formation)
 
         do iCell = 1, nCells
           do k = 1, maxLevelCell(iCell)
@@ -631,7 +632,12 @@ module ocn_time_integration_rk4
         end do
 
         call ocn_diagnostic_solve(dt, statePool, forcingPool, meshPool, diagnosticsPool, scratchPool, 2)
-        call ocn_sea_ice_formation(meshPool, indexTemperature, indexSalinity, layerThicknessNew, tracersNew, seaIceEnergy, err)
+
+        if(config_frazil_ice_formation) then
+           call mpas_pool_get_array(forcingPool, 'seaIceEnergy', seaIceEnergy)
+           call ocn_sea_ice_formation(meshPool, indexTemperature, indexSalinity, layerThicknessNew, tracersNew, seaIceEnergy, err)
+        end if
+
         block => block % next
       end do
 
