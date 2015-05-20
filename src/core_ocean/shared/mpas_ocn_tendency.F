@@ -104,7 +104,7 @@ contains
       type (mpas_pool_type), intent(in) :: meshPool !< Input: Mesh information
 
       real (kind=RKIND), dimension(:), pointer :: surfaceMassFlux
-      real (kind=RKIND), dimension(:,:), pointer :: layerThickness, layerThicknessEdge, &
+      real (kind=RKIND), dimension(:,:), pointer :: layerThicknessEdge, &
          vertAleTransportTop, tend_layerThickness, normalTransportVelocity, transmissionCoefficients
 
       integer :: err
@@ -155,7 +155,7 @@ contains
       !
       call mpas_timer_start("surface flux", .false.)
 
-      call ocn_thick_surface_flux_tend(meshPool, transmissionCoefficients, layerThickness, surfaceMassFlux, tend_layerThickness, err)
+      call ocn_thick_surface_flux_tend(meshPool, transmissionCoefficients, surfaceMassFlux, tend_layerThickness, err)
       call mpas_timer_stop("surface flux")
 
       call mpas_timer_stop("ocn_tend_thick")

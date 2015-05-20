@@ -71,7 +71,7 @@ contains
 !
 !-----------------------------------------------------------------------
 
-   subroutine ocn_thick_surface_flux_tend(meshPool, transmissionCoefficients, layerThickness, surfaceMassFlux, tend, err)!{{{
+   subroutine ocn_thick_surface_flux_tend(meshPool, transmissionCoefficients, surfaceMassFlux, tend, err)!{{{
       !-----------------------------------------------------------------
       !
       ! input variables
@@ -83,9 +83,6 @@ contains
 
       real (kind=RKIND), dimension(:,:), intent(in) :: &
          transmissionCoefficients !< Input: Coefficients for the transmission of surface fluxes
-
-      real (kind=RKIND), dimension(:,:), intent(in) :: &
-         layerThickness   !< Input: Layer thickness
 
       real (kind=RKIND), dimension(:), intent(in) :: &
          surfaceMassFlux   !< Input: surface flux of mass
