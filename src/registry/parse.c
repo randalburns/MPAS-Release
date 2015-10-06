@@ -172,8 +172,12 @@ int parse_reg_xml(FILE * regfile, struct namelist **nls, struct dimension ** dim
 		}
 	}
 
-	if(nls_ptr2->next) free(nls_ptr2->next);
-	nls_ptr2->next = NULL;
+        // RB nls_ptr2 not defined here
+        if (nls_ptr2 != NULL)
+        {
+	  if(nls_ptr2->next) free(nls_ptr2->next);
+	  nls_ptr2->next = NULL;
+        }	
 
 	// Parse Dimensions
 	for (dims_xml = ezxml_child(registry, "dims"); dims_xml; dims_xml = dims_xml->next){
@@ -223,8 +227,12 @@ int parse_reg_xml(FILE * regfile, struct namelist **nls, struct dimension ** dim
 		}   
 	}
 
-	if(dim_ptr2->next) free(dim_ptr2->next);
-	dim_ptr2->next = NULL;
+        // RB nls_ptr2 not defined here
+        if (nls_ptr2 != NULL)
+        {
+	  if(dim_ptr2->next) free(dim_ptr2->next);
+	  dim_ptr2->next = NULL;
+        }
 
 	// Parse Variable Structures
 	for(structs_xml = ezxml_child(registry, "var_struct"); structs_xml; structs_xml = structs_xml->next){
@@ -456,10 +464,12 @@ int parse_reg_xml(FILE * regfile, struct namelist **nls, struct dimension ** dim
 			var_ptr = var_ptr->next;
 		}
 	}
-
-	if(var_ptr2->next) free(var_ptr2->next);
-	var_ptr2->next = NULL;
-
+        // RB var_ptr2 undefined
+        if (var_ptr2 != NULL ) 
+        {
+  	  if(var_ptr2->next) free(var_ptr2->next);
+	  var_ptr2->next = NULL;
+        }
 	grouplist_ptr = *groups;
 	if ((*groups)->next) *groups = (*groups)->next;
 	if (grouplist_ptr) free(grouplist_ptr);
