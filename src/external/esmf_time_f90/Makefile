@@ -41,7 +41,7 @@ Test1_ESMF.f : Test1.F90
 	$(CPP) -C -P -I. Test1_ESMF.b > Test1_ESMF.f
 
 Test1_ESMF.exe : libesmf_time.a Test1_ESMF.o
-	$(FC) -o Test1_ESMF.exe Test1_ESMF.o libesmf_time.a
+	$(FC) -cpp -o Test1_ESMF.exe Test1_ESMF.o libesmf_time.a
 
 Test1_WRFU.f : Test1.F90
 	$(RM) Test1_WRFU.b Test1_WRFU.f
@@ -49,14 +49,14 @@ Test1_WRFU.f : Test1.F90
 	$(CPP) -C -P -I. Test1_WRFU.b > Test1_WRFU.f
 
 Test1_WRFU.exe : libesmf_time.a Test1_WRFU.o
-	$(FC) -o Test1_WRFU.exe Test1_WRFU.o libesmf_time.a
+	$(FC) -cpp -o Test1_WRFU.exe Test1_WRFU.o libesmf_time.a
 
 .F90.o :
 	$(RM) $@
 	$(SED_FTN) $*.F90 > $*.b
 	$(CPP) -C -P -I. $*.b > $*.f
 	$(RM) $*.b
-	$(FC) -o $@ -c $*.f
+	$(FC) -cpp -o $@ -c $*.f
 
 .F90.f :
 	$(RM) $@
@@ -67,7 +67,7 @@ Test1_WRFU.exe : libesmf_time.a Test1_WRFU.o
 .f.o :
 	$(RM) $@
 	$(RM) $*.b
-	$(FC) -c $*.f
+	$(FC) -cpp -c $*.f
 
 clean : testclean
 
